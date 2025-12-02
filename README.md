@@ -8,6 +8,22 @@ In our system the XML file will represent users in a social network
 Each user has id (unique), name, list of posts, list of followers.
 Each post has a text and a list of topics.
 
+# Project Structure
+```
+├── CMakeLists.txt
+├── include/
+│   ├── (all header files)
+│   └── ...
+├── src/
+│   ├── (all source files)
+│   └── ...
+└── main.cpp
+│
+└── README.md
+
+```
+
+
 # Requirements
 ## Level 1
 - Build a desktop application that can process XML files.
