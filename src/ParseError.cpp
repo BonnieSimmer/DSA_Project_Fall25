@@ -1,16 +1,16 @@
 #include "ParseError.hpp"
-ParseError::ParseError(int l, int c, srting msg){
+ParseError::ParseError(int l, int c, string msg){
     line = l;
     column = c;
     message = msg;
 }
 
-int ParseError::getline() const {return line;}
+int ParseError::getLine() const {return line;}
 int ParseError::getCol() const {return column;}
-string ParseError::getCol() const {return message;}
+string ParseError::getMessage() const {return message;}
 
 void ParseError::setLine(int l) {line = l;}
-void ParseError::setCol(int c){message = msg;}
+void ParseError::setCol(int c){column = c;}
 void ParseError::setMessage(string msg){message = msg;}
 
 string ParseError::applyFix(){
