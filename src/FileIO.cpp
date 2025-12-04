@@ -34,7 +34,7 @@ string FileIO::writeData(const string &output, const string &data, SourceType so
             throw runtime_error("Cannot open output file: " + output);
         }
 
-        file << output;
+        file << data;
         return "File saved successfully.";
     }
 

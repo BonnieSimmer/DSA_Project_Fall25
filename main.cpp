@@ -1,10 +1,14 @@
-#include <QApplication>
-#include <QPushButton>
+#include "include/GraphicalUserInterface.h"
+// #include "include/FileIO.hpp"
 
 int main(int argc, char *argv[]) {
-    QApplication a(argc, argv);
-    QPushButton button("Hello world!", nullptr);
-    button.resize(200, 100);
-    button.show();
-    return QApplication::exec();
+    // For Testing FileIO
+    // string data = FileIO::readXML("../data/sample.xml", SourceType::File);
+    // FileIO::writeData("../data/testingOutput.xml", data, SourceType::File);
+
+
+    if (argc > 1) {
+        // TODO: run cli
+    }
+    return run_gui(argc, argv);
 }
