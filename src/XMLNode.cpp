@@ -30,7 +30,7 @@ string XMLNode::getAttribute(const string& name) const {
     }
     return ""; // Return empty string if attribute not found
 }
-vector<shared_ptr<XMLNode>> getChildrenByTag(const string& tag_name) const{
+vector<shared_ptr<XMLNode>> XMLNode::getChildrenByTag(const string& tag_name) const{
     vector<shared_ptr<XMLNode>> matchingChildren;
     
     for (const auto& child : children) {
