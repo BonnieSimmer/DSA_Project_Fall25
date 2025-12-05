@@ -1,34 +1,44 @@
-#include<bits/stdc++.h>
-#include<memory>
-
-using namespace std;
-
-class XMLNode : public enable_shared_from_this<XMLNode> {
-public:
-    string tagname;
-    map<string, string> attributes;
-    string text;
-    vector<shared_ptr<XMLNode>>children;
-    weakptr<XMLNode>parent;
-
-    int lineNumber; //for error tracking
-
+#include "XMLNode.hpp"
     //constructor
-    XMLNode(string &name, int line_num = 0){
-        tagname = name;
-        lineNumber = line_num;
-        //the rest of its fields are default-initialized as text = ""
-    }
-    void setAttribute(string &key, string &value){
-        attributes[key] = value;
-    }
-    void setText(string &content){
-        text = content;
-    }
-    void addChild(shared_ptr<XMLNode> child){
-        //just for establish the parent child connection when creating new nodes in xmlParser
-        child -> parent = shared_from_this();
-        children.push_back(child);
-    }
+XMLNode::XMLNode(string &name, int line_num = 0){
+    tagname = name;
+    lineNumber = line_num;
+    //the rest of its fields are default-initialized as text = ""
+}
+void XMLNode::setAttribute(string &key, string &value){
+    attributes[key] = value;
+}
+void XMLNode::setText(string &content){
+    text = content;
+}
+void XMLNode::addChild(shared_ptr<XMLNode> child){
+    //just for establish the parent child connection when creating new nodes in xmlParser
+    child -> parent = shared_from_this();
+    children.push_back(child);
+}
 
-};
+shared_ptr<XMLNode> XMLNode::getParent() const {
+    return parent.lock();
+}
+vector<shared_ptr<XMLNode>>& XMLNode::getChildren() {
+    return children;
+}
+string XMLNode::getAttribute(const string& name) const {
+    auto it = attributes.find(name);
+    if (it != attributes.end()) {
+        return it->second;
+    }
+    return ""; // Return empty string if attribute not found
+}
+vector<shared_ptr<XMLNode>> getChildrenByTag(const string& tag_name) const{
+    vector<shared_ptr<XMLNode>> matchingChildren;
+    
+    for (const auto& child : children) {
+        // Check if the child's tag name matches the requested tag
+        if (child->tagname == tag_name) {
+            matchingChildren.push_back(child);
+        }
+    }    
+    return matchingChildren;
+}
+
