@@ -23,7 +23,9 @@ public:
     shared_ptr<XMLNode> getParent() const;
     vector<shared_ptr<XMLNode>>& getChildren();
     string getAttribute(const string& name) const;
+    vector<shared_ptr<XMLNode>> getChildrenByTag(const string& tag_name) const;
 
 };
 
 #endif
+
