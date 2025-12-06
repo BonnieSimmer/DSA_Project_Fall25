@@ -41,6 +41,12 @@ void CommandLineInterface::run(int argc, char* argv[]) {
     else if (command == "mini") {
         // Minify XML
     }
+    else if(command == "compress"){
+        // Compress XML
+    }
+    else if(command == "decompress"){
+        // Decompress XML
+    }
     else {
         std::cout << "Unknown command\n";
     }
