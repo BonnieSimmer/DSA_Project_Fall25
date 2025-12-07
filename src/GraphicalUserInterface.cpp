@@ -274,7 +274,7 @@ void MainWindow::printOutput(const string& data) {
 }
 
 void MainWindow::saveOutputToFile(const string &data) {
-    QString savePath = QFileDialog::getSaveFileName(this, "Save Output", "", "Text Files (*.txt)");
+    QString savePath = QFileDialog::getSaveFileName(this, "Save Output", "", "XML Files (*.xml);;JSON Files (*.json)");
 
     if (savePath.isEmpty()) {
         return;
