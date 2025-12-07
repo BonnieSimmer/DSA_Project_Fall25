@@ -7,10 +7,14 @@
 /dataSources/
 /dataSources.local.xml
 
-# Ignore Code::Blocks files
-*.cbp
-*.layout
+# Code::Blocks build artifacts
+bin/
+obj/
+*.exe
+*.o
 *.depend
+*.layout
+
 
 # Ignore IDE folders
 .idea/
