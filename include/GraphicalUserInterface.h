@@ -4,6 +4,7 @@
 #pragma once
 
 #include "../include/FileIO.hpp"
+#include "../include/XMLMinifier.hpp"
 
 #include <QMainWindow>
 #include <QLineEdit>
@@ -37,6 +38,7 @@ private:
 
 
     FileIO fileIO;
+    XMLMinifier minifier;
 };
 
 
