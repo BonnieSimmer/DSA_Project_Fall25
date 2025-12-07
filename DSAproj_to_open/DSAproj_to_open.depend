@@ -1,0 +1,36 @@
+# depslib dependency file v1.0
+1765124958 source:c:\users\tarek\dsa_project_fall25\main.cpp
+	"include/GraphicalUserInterface.h"
+
+1764904540 c:\users\tarek\dsa_project_fall25\include\graphicaluserinterface.h
+
+1764904540 source:c:\users\tarek\dsa_project_fall25\src\commandlineinterface.cpp
+
+1764904540 source:c:\users\tarek\dsa_project_fall25\src\fileio.cpp
+	<sstream>
+	"../include/FileIO.hpp"
+
+1764904540 c:\users\tarek\dsa_project_fall25\include\fileio.hpp
+	<fstream>
+
+1764904540 source:c:\users\tarek\dsa_project_fall25\src\xmlminifier.cpp
+
+1765124958 source:c:\users\tarek\dsa_project_fall25\src\graphicaluserinterface.cpp
+
+1764904540 source:c:\users\tarek\dsa_project_fall25\src\xmlparsser.cpp
+
+1765124910 source:c:\users\tarek\dsa_project_fall25\dsaproj_to_open\main.cpp
+
+1765124821 source:c:\users\tarek\dsa_project_fall25\src\parseerror.cpp
+	"include/ParseError.hpp"
+
+1764904540 c:\users\tarek\dsa_project_fall25\include\parseerror.hpp
+	<string>
+
+1765124813 source:c:\users\tarek\dsa_project_fall25\src\xmlnode.cpp
+	"include/XMLNode.hpp"
+
+1765124898 c:\users\tarek\dsa_project_fall25\include\xmlnode.hpp
+	<bits/stdc++.h>
+	<memory>
+
