@@ -49,6 +49,7 @@ string FileIO::writeData(const string &output, const string &data, SourceType so
 // Reads only the first 'maxLines' lines of a file.
 // Used by the GUI to show a short preview of large XML files
 // without loading the entire content into memory.
+//
 // Returns the preview text as a single string.
 bool FileIO::exists(const std::string& path) {
     std::ifstream file(path);
