@@ -14,8 +14,8 @@ enum class SourceType {
 class FileIO {
 public:
     // The input and output paths are relative to cmake-build-debug/
-    static string readXML(const string& input, SourceType sourceType);
-    static string writeData(const string& output, const std::string& data, SourceType sourceType);
+    string readXML(const string& input, SourceType sourceType);
+    string writeData(const string& output, const std::string& data, SourceType sourceType);
 };
 
 #endif
