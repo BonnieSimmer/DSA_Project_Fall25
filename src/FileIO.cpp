@@ -61,6 +61,7 @@ string FileIO::readPreview(const string &path, int maxLines) {
         throw runtime_error("Preview file does not exist: " + path);
     }
 
+    
     ifstream file(path);
     if (!file.is_open()) {
         throw runtime_error("Cannot open file for preview: " + path);
