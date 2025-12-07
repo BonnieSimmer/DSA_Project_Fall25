@@ -11,13 +11,13 @@ public:
     map<string, string> attributes;
     string text;
     vector<shared_ptr<XMLNode>>children;
-    weakptr<XMLNode>parent;
+    std::weak_ptr <XMLNode>parent;
     int lineNumber; //for error tracking
 
-    XMLNode(string &name, int line_num = 0);
+    XMLNode(const string &name, int line_num = 0);
 
-    void setAttribute(string &key, string &value);
-    void setText(string &content);
+    void setAttribute(const string &key, const string &value);
+    void setText(const string &content);
     void addChild(shared_ptr<XMLNode> child);
 
     shared_ptr<XMLNode> getParent() const;
