@@ -6,3 +6,13 @@
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
+
+# Ignore Code::Blocks files
+*.cbp
+*.layout
+*.depend
+
+# Ignore IDE folders
+.idea/
+.vscode/
+
