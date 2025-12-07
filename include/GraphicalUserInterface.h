@@ -28,6 +28,7 @@ private slots:
     void onDecompressClicked();
     void onSaveClicked();
     void printOutput(const std::string& data);
+    void saveOutputToFile(const std::string& data);
 
 private:
     QLineEdit *inputPath;

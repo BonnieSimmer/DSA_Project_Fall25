@@ -229,7 +229,7 @@ void MainWindow::onCompressClicked()  {
         }
 
         // TODO: add button logic here
-        printOutput(xmlContent);
+        saveOutputToFile(xmlContent);
     }
     catch (const exception &ex) {
         QMessageBox::critical(this, "Error", ex.what());
@@ -256,7 +256,7 @@ void MainWindow::onDecompressClicked()   {
             xmlContent = fileIO.readXML(path.toStdString(), SourceType::File);
         }
         // TODO: add button logic here
-        printOutput(xmlContent);
+        saveOutputToFile(xmlContent);
     }
     catch (const exception &ex) {
         QMessageBox::critical(this, "Error", ex.what());
@@ -265,6 +265,15 @@ void MainWindow::onDecompressClicked()   {
 
 void MainWindow::onSaveClicked()
 {
+    saveOutputToFile(outputText->toPlainText().toStdString());
+}
+
+void MainWindow::printOutput(const string& data) {
+    QString result = QString::fromStdString(fileIO.writeData("", data, SourceType::GUI));
+    outputText->setPlainText(result);
+}
+
+void MainWindow::saveOutputToFile(const string &data) {
     QString savePath = QFileDialog::getSaveFileName(this, "Save Output", "", "Text Files (*.txt)");
 
     if (savePath.isEmpty()) {
@@ -274,7 +283,7 @@ void MainWindow::onSaveClicked()
     try {
         string status = fileIO.writeData(
             savePath.toStdString(),
-            outputText->toPlainText().toStdString(),
+            data,
             SourceType::File
         );
 
@@ -283,9 +292,4 @@ void MainWindow::onSaveClicked()
     catch (const exception &ex) {
         QMessageBox::critical(this, "Error", ex.what());
     }
-}
-
-void MainWindow::printOutput(const string& data) {
-    QString result = QString::fromStdString(fileIO.writeData("", data, SourceType::GUI));
-    outputText->setPlainText(result);
 }
