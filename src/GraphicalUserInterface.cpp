@@ -199,8 +199,8 @@ void MainWindow::onMinifyClicked()  {
 
             xmlContent = fileIO.readXML(path.toStdString(), SourceType::File);
         }
+        xmlContent = minifier.minify(xmlContent);
 
-        // TODO: add button logic here
         printOutput(xmlContent);
     }
     catch (const exception &ex) {
