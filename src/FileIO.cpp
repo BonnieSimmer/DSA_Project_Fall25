@@ -43,41 +43,5 @@ string FileIO::writeData(const string &output, const string &data, SourceType so
     throw runtime_error("You forgot to add the source type!");
 }
 
-// ----------------------------
-// Read preview (GUI)
-// ----------------------------
-// Reads only the first 'maxLines' lines of a file.
-// Used by the GUI to show a short preview of large XML files
-// without loading the entire content into memory.
-//
-// Returns the preview text as a single string.
-bool FileIO::exists(const std::string& path) {
-    std::ifstream file(path);
-    return file.good();
-}
-
-string FileIO::readPreview(const string &path, int maxLines) {
-    if (!exists(path)) {
-        throw runtime_error("Preview file does not exist: " + path);
-    }
-
-    
-    ifstream file(path);
-    if (!file.is_open()) {
-        throw runtime_error("Cannot open file for preview: " + path);
-    }
-
-    string line;
-    string output;
-    int count = 0;
-
-    while (getline(file, line) && count < maxLines) {
-        output += line + "\n";
-        count++;
-    }
-
-    return output;
-}
-
 
 
