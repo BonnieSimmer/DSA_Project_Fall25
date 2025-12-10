@@ -11,6 +11,9 @@ void XMLNode::setAttribute(const string &key, const string &value){
 void XMLNode::setText(const string &content){
     text = content;
 }
+void XMLNode::setTag(const string &name){
+    tagname = name;
+}
 void XMLNode::addChild(shared_ptr<XMLNode> child){
     //just for establish the parent child connection when creating new nodes in xmlParser
     child -> parent = shared_from_this();

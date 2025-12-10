@@ -18,6 +18,7 @@ public:
 
     void setAttribute(const string &key, const string &value);
     void setText(const string &content);
+    void setTag (const string &name);
     void addChild(shared_ptr<XMLNode> child);
 
     shared_ptr<XMLNode> getParent() const;
