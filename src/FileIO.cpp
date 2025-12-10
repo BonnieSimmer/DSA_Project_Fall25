@@ -1,6 +1,8 @@
 #include <sstream>
 #include "../include/FileIO.hpp"
 
+
+
 string FileIO::readXML(const string &input, SourceType sourceType) {
     if (sourceType == SourceType::GUI) {
         return input;
@@ -40,8 +42,6 @@ string FileIO::writeData(const string &output, const string &data, SourceType so
 
     throw runtime_error("You forgot to add the source type!");
 }
-
-
 
 
 

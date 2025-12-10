@@ -44,4 +44,3 @@ vector<shared_ptr<XMLNode>> XMLNode::getChildrenByTag(const string& tag_name) co
     }
     return matchingChildren;
 }
-

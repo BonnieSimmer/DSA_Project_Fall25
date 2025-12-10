@@ -1,3 +1,21 @@
+
+// -----------------For Testing XMLMinifier-------------------
+// #include <iostream>
+// #include "include/XMLMinifier.hpp"
+// #include "include/FileIO.hpp"
+//
+// int main() {
+//     std::string xml = FileIO::readXML("data/sample.xml", SourceType::File);
+//
+//     std::string minified = XMLMinifier::minify(xml);
+//
+//     FileIO::writeData("data/testingOutput.xml", minified, SourceType::File);
+//
+//     std::cout << "Minified successfully! Check testingOutput.xml\n";
+//
+//     return 0;
+// }
+
 // -----------------For Testing XMLNode-------------------
 //
 //#include "include/XMLNode.hpp"
