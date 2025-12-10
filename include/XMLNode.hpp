@@ -17,6 +17,9 @@ public:
     XMLNode(const string &name, int line_num = 0);
 
     void setAttribute(const string &key, const string &value);
+    void setAttributes(const map<string, string> &attr){
+        attributes = attr;
+    }
     void setText(const string &content);
     void setTag (const string &name);
     void addChild(shared_ptr<XMLNode> child);
