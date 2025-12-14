@@ -17,7 +17,6 @@ public:
     static string readXML(const string& input, SourceType sourceType);
     static string writeData(const string& output, const std::string& data, SourceType sourceType);
 
-
 };
 
 #endif
