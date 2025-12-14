@@ -1,17 +1,27 @@
-
+// -----------------For Testing XMLFormatter-------------------
+// #include "include/XMLFormatter.hpp"
+// #include "include/FileIO.hpp"
+// #include <iostream>
+//
+// int main() {
+//     string XML = FileIO::readXML("data/unformatted.xml",SourceType::File);
+//     string formattedXML = XMLFormatter::format(XML);
+//     FileIO::writeData("data/formatted.xml", formattedXML , SourceType::File);
+//     return 0;
+// }
 // -----------------For Testing XMLMinifier-------------------
 // #include <iostream>
 // #include "include/XMLMinifier.hpp"
 // #include "include/FileIO.hpp"
-//
+// using namespace std;
 // int main() {
-//     std::string xml = FileIO::readXML("data/sample.xml", SourceType::File);
+//     string xml = FileIO::readXML("data/sample.xml", SourceType::File);
 //
-//     std::string minified = XMLMinifier::minify(xml);
+//     string minified = XMLMinifier::minify(xml);
 //
-//     FileIO::writeData("data/testingOutput.xml", minified, SourceType::File);
+//     FileIO::writeData("data/minified.xml", minified, SourceType::File);
 //
-//     std::cout << "Minified successfully! Check testingOutput.xml\n";
+//     cout << "Minified successfully! Check testingOutput.xml\n";
 //
 //     return 0;
 // }
