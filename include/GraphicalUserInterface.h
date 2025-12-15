@@ -3,8 +3,9 @@
 
 #pragma once
 
-#include "../include/FileIO.hpp"
-#include "../include/XMLMinifier.hpp"
+#include "FileIO.hpp"
+#include "XMLFormatter.hpp"
+#include "XMLMinifier.hpp"
 
 #include <QMainWindow>
 #include <QLineEdit>
@@ -28,17 +29,13 @@ private slots:
     void onCompressClicked();
     void onDecompressClicked();
     void onSaveClicked();
-    void printOutput(const std::string& data);
+    void printOutput(const std::string& data) const;
     void saveOutputToFile(const std::string& data);
 
 private:
     QLineEdit *inputPath;
     QTextEdit *inputText;
     QTextEdit *outputText;
-
-
-    FileIO fileIO;
-    XMLMinifier minifier;
 };
 
 
