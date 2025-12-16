@@ -6,3 +6,9 @@
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
+# Code::Blocks files
+*.cbp
+*.layout
+*.depend
+bin/
+obj/
