@@ -50,15 +50,15 @@
 // #include <iostream>
 // #include "include/XMLMinifier.hpp"
 // #include "include/FileIO.hpp"
-//
+// using namespace std;
 // int main() {
-//     std::string xml = FileIO::readXML("data/sample.xml", SourceType::File);
+//     string xml = FileIO::readXML("data/sample.xml", SourceType::File);
 //
-//     std::string minified = XMLMinifier::minify(xml);
+//     string minified = XMLMinifier::minify(xml);
 //
-//     FileIO::writeData("data/testingOutput.xml", minified, SourceType::File);
+//     FileIO::writeData("data/minified.xml", minified, SourceType::File);
 //
-//     std::cout << "Minified successfully! Check testingOutput.xml\n";
+//     cout << "Minified successfully! Check testingOutput.xml\n";
 //
 //     return 0;
 // }

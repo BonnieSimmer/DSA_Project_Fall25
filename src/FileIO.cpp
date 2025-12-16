@@ -42,6 +42,3 @@ string FileIO::writeData(const string &output, const string &data, SourceType so
 
     throw runtime_error("You forgot to add the source type!");
 }
-
-
-

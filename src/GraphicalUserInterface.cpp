@@ -103,7 +103,7 @@ void MainWindow::onCheckClicked()
         QString userXml = inputText->toPlainText().trimmed();
 
         if (!userXml.isEmpty()) {
-            xmlContent = fileIO.readXML(userXml.toStdString(), SourceType::GUI);
+            xmlContent = FileIO::readXML(userXml.toStdString(), SourceType::GUI);
         }
         else {
             QString path = inputPath->text().trimmed();
@@ -114,7 +114,7 @@ void MainWindow::onCheckClicked()
                 return;
             }
 
-            xmlContent = fileIO.readXML(path.toStdString(), SourceType::File);
+            xmlContent = FileIO::readXML(path.toStdString(), SourceType::File);
         }
 
         // TODO: add button logic here
@@ -132,7 +132,7 @@ void MainWindow::onPrettifyClicked()
         QString userXml = inputText->toPlainText().trimmed();
 
         if (!userXml.isEmpty()) {
-            xmlContent = fileIO.readXML(userXml.toStdString(), SourceType::GUI);
+            xmlContent = FileIO::readXML(userXml.toStdString(), SourceType::GUI);
         }
         else {
             QString path = inputPath->text().trimmed();
@@ -143,9 +143,9 @@ void MainWindow::onPrettifyClicked()
                 return;
             }
 
-            xmlContent = fileIO.readXML(path.toStdString(), SourceType::File);
+            xmlContent = FileIO::readXML(path.toStdString(), SourceType::File);
         }
-        // TODO: add button logic here
+        xmlContent = XMLFormatter::format(xmlContent);
         printOutput(xmlContent);
     }
     catch (const exception &ex) {
@@ -159,7 +159,7 @@ void MainWindow::onConvertClicked() {
         QString userXml = inputText->toPlainText().trimmed();
 
         if (!userXml.isEmpty()) {
-            xmlContent = fileIO.readXML(userXml.toStdString(), SourceType::GUI);
+            xmlContent = FileIO::readXML(userXml.toStdString(), SourceType::GUI);
         }
         else {
             QString path = inputPath->text().trimmed();
@@ -170,7 +170,7 @@ void MainWindow::onConvertClicked() {
                 return;
             }
 
-            xmlContent = fileIO.readXML(path.toStdString(), SourceType::File);
+            xmlContent = FileIO::readXML(path.toStdString(), SourceType::File);
         }
         // TODO: add button logic here
         printOutput(xmlContent);
@@ -186,7 +186,7 @@ void MainWindow::onMinifyClicked()  {
         QString userXml = inputText->toPlainText().trimmed();
 
         if (!userXml.isEmpty()) {
-            xmlContent = fileIO.readXML(userXml.toStdString(), SourceType::GUI);
+            xmlContent = FileIO::readXML(userXml.toStdString(), SourceType::GUI);
         }
         else {
             QString path = inputPath->text().trimmed();
@@ -197,9 +197,9 @@ void MainWindow::onMinifyClicked()  {
                 return;
             }
 
-            xmlContent = fileIO.readXML(path.toStdString(), SourceType::File);
+            xmlContent = FileIO::readXML(path.toStdString(), SourceType::File);
         }
-        xmlContent = minifier.minify(xmlContent);
+        xmlContent = XMLMinifier::minify(xmlContent);
 
         printOutput(xmlContent);
     }
@@ -214,7 +214,7 @@ void MainWindow::onCompressClicked()  {
         QString userXml = inputText->toPlainText().trimmed();
 
         if (!userXml.isEmpty()) {
-            xmlContent = fileIO.readXML(userXml.toStdString(), SourceType::GUI);
+            xmlContent = FileIO::readXML(userXml.toStdString(), SourceType::GUI);
         }
         else {
             QString path = inputPath->text().trimmed();
@@ -225,7 +225,7 @@ void MainWindow::onCompressClicked()  {
                 return;
             }
 
-            xmlContent = fileIO.readXML(path.toStdString(), SourceType::File);
+            xmlContent = FileIO::readXML(path.toStdString(), SourceType::File);
         }
 
         // TODO: add button logic here
@@ -242,7 +242,7 @@ void MainWindow::onDecompressClicked()   {
         QString userXml = inputText->toPlainText().trimmed();
 
         if (!userXml.isEmpty()) {
-            xmlContent = fileIO.readXML(userXml.toStdString(), SourceType::GUI);
+            xmlContent = FileIO::readXML(userXml.toStdString(), SourceType::GUI);
         }
         else {
             QString path = inputPath->text().trimmed();
@@ -253,7 +253,7 @@ void MainWindow::onDecompressClicked()   {
                 return;
             }
 
-            xmlContent = fileIO.readXML(path.toStdString(), SourceType::File);
+            xmlContent = FileIO::readXML(path.toStdString(), SourceType::File);
         }
         // TODO: add button logic here
         saveOutputToFile(xmlContent);
@@ -268,8 +268,8 @@ void MainWindow::onSaveClicked()
     saveOutputToFile(outputText->toPlainText().toStdString());
 }
 
-void MainWindow::printOutput(const string& data) {
-    QString result = QString::fromStdString(fileIO.writeData("", data, SourceType::GUI));
+void MainWindow::printOutput(const string& data) const {
+    QString result = QString::fromStdString(FileIO::writeData("", data, SourceType::GUI));
     outputText->setPlainText(result);
 }
 
@@ -281,7 +281,7 @@ void MainWindow::saveOutputToFile(const string &data) {
     }
 
     try {
-        string status = fileIO.writeData(
+        string status = FileIO::writeData(
             savePath.toStdString(),
             data,
             SourceType::File

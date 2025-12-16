@@ -16,7 +16,9 @@ find_package(Qt6 COMPONENTS
 add_executable(DSA_Project_Fall25
      main.cpp
     src/FileIO.cpp
-    src/XMLMinifier.cpp 
+    src/XMLMinifier.cpp
+    src/XMLFormatter.cpp
+
 )
 target_link_libraries(DSA_Project_Fall25
         Qt::Core
