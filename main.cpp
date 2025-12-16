@@ -1,12 +1,49 @@
-// -----------------For Testing XMLFormatter-------------------
-// #include "include/XMLFormatter.hpp"
-// #include "include/FileIO.hpp"
+// ---------------- For testing XMLParser ---------------- //
 // #include <iostream>
-//
-// int main() {
-//     string XML = FileIO::readXML("data/unformatted.xml",SourceType::File);
-//     string formattedXML = XMLFormatter::format(XML);
-//     FileIO::writeData("data/formatted.xml", formattedXML , SourceType::File);
+// #include "include/XMLParsser.hpp"
+// #include "include/FileIO.hpp"
+
+// using namespace std;
+
+// int main(int argc, char *argv[]){
+//     FileIO fileIO;
+//     XMLParser parser;
+//     string data = fileIO.readXML("data/sample.xml", SourceType::File);
+//     shared_ptr<XMLNode> root = parser.parse(data);
+    
+//     cout << "Root tag: " << root->tagname << endl << endl;
+    
+//     // Get parsed users
+//     vector<User> users = parser.getUsers();
+//     cout << "Successfully parsed " << users.size() << " users\n\n";
+    
+//     // Display parsed data
+//     for(size_t i = 0; i < users.size(); i++) {
+//         const User& user = users[i];
+//         cout << "--- User #" << (i+1) << " ---" << endl;
+//         cout << "  ID: " << user.id << endl;
+//         cout << "  Name: " << user.name << endl;
+//         cout << "  Posts: " << user.posts.size() << endl;
+        
+//         for(size_t j = 0; j < user.posts.size(); j++) {
+//             const Post& post = user.posts[j];
+//             cout << "    Post " << (j+1) << ":" << endl;
+//             cout << "      Body: " << post.body.substr(0, 50) << "..." << endl;
+//             cout << "      Topics: ";
+//             for(size_t k = 0; k < post.topics.size(); k++) {
+//                 cout << post.topics[k];
+//                 if(k < post.topics.size() - 1) cout << ", ";
+//             }
+//             cout << endl;
+//         }
+        
+//         cout << "  Followers: " << user.followers.size() << endl;
+//         for(size_t j = 0; j < user.followers.size(); j++) {
+//             cout << "    Follower ID: " << user.followers[j].getId() << endl;
+//         }
+//         cout << endl;
+//     }
+    
 //     return 0;
 // }
 // -----------------For Testing XMLMinifier-------------------
@@ -108,13 +145,13 @@
 //#include "include/GraphicalUserInterface.h"
 // #include "include/FileIO.hpp"
 
-//int main(int argc, char *argv[]) {
-//    // string data = FileIO::readXML("../data/sample.xml", SourceType::File);
-//    // FileIO::writeData("../data/testingOutput.xml", data, SourceType::File);
-//
-//
+// int main(int argc, char *argv[]) {
+//    string data = FileIO::readXML("../data/sample.xml", SourceType::File);
+//    FileIO::writeData("../data/testingOutput.xml", data, SourceType::File);
+
+
 //    if (argc > 1) {
 //        // TODO: run cli
 //    }
 //    return run_gui(argc, argv);
-//}
+// }

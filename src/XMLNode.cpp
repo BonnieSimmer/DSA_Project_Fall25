@@ -1,4 +1,4 @@
-#include "include/XMLNode.hpp"
+#include "../include/XMLNode.hpp"
     //constructor
 XMLNode::XMLNode(const string &name, int line_num){
     tagname = name;
