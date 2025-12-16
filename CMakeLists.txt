@@ -13,13 +13,25 @@ find_package(Qt6 COMPONENTS
         Widgets
         REQUIRED)
 
-add_executable(DSA_Project_Fall25
-     main.cpp
-    src/FileIO.cpp
-    src/XMLMinifier.cpp
-    src/XMLFormatter.cpp
-
+add_executable(DSA_Project_Fall25 main.cpp
+        src/FileIO.cpp
+        src/GraphicalUserInterface.cpp
+        include/GraphicalUserInterface.h
+        src/CommandLineInterface.cpp
+        include/CommandLineInterface.hpp
+        include/ParseError.hpp
+        src/ParseError.cpp
+        include/XMLMinifier.hpp
+        src/XMLMinifier.cpp
+        src/XMLFormatter.cpp
+        src/XMLParsser.cpp
+        src/XMLNode.cpp
 )
+
+set_target_properties(DSA_Project_Fall25 PROPERTIES
+        OUTPUT_NAME "xml_editor"
+)
+
 target_link_libraries(DSA_Project_Fall25
         Qt::Core
         Qt::Gui

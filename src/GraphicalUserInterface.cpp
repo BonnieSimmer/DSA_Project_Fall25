@@ -93,6 +93,8 @@ void MainWindow::onBrowseClicked()
 
     if (!file.isEmpty()) {
         inputPath->setText(file);
+        QString content = QString::fromStdString(FileIO::readXML(file.toStdString(), SourceType::File));
+        inputText->setText(content);
     }
 }
 
@@ -106,15 +108,9 @@ void MainWindow::onCheckClicked()
             xmlContent = FileIO::readXML(userXml.toStdString(), SourceType::GUI);
         }
         else {
-            QString path = inputPath->text().trimmed();
-
-            if (path.isEmpty()) {
-                QMessageBox::warning(this, "Warning",
-                                     "No user XML provided and no file selected.");
-                return;
-            }
-
-            xmlContent = FileIO::readXML(path.toStdString(), SourceType::File);
+            QMessageBox::warning(this, "Warning",
+                "No user XML provided and no file selected.");
+            return;
         }
 
         // TODO: add button logic here
@@ -135,15 +131,9 @@ void MainWindow::onPrettifyClicked()
             xmlContent = FileIO::readXML(userXml.toStdString(), SourceType::GUI);
         }
         else {
-            QString path = inputPath->text().trimmed();
-
-            if (path.isEmpty()) {
-                QMessageBox::warning(this, "Warning",
-                                     "No user XML provided and no file selected.");
-                return;
-            }
-
-            xmlContent = FileIO::readXML(path.toStdString(), SourceType::File);
+            QMessageBox::warning(this, "Warning",
+                "No user XML provided and no file selected.");
+            return;
         }
         xmlContent = XMLFormatter::format(xmlContent);
         printOutput(xmlContent);
@@ -162,15 +152,9 @@ void MainWindow::onConvertClicked() {
             xmlContent = FileIO::readXML(userXml.toStdString(), SourceType::GUI);
         }
         else {
-            QString path = inputPath->text().trimmed();
-
-            if (path.isEmpty()) {
-                QMessageBox::warning(this, "Warning",
-                                     "No user XML provided and no file selected.");
-                return;
-            }
-
-            xmlContent = FileIO::readXML(path.toStdString(), SourceType::File);
+            QMessageBox::warning(this, "Warning",
+                "No user XML provided and no file selected.");
+            return;
         }
         // TODO: add button logic here
         printOutput(xmlContent);
@@ -189,15 +173,9 @@ void MainWindow::onMinifyClicked()  {
             xmlContent = FileIO::readXML(userXml.toStdString(), SourceType::GUI);
         }
         else {
-            QString path = inputPath->text().trimmed();
-
-            if (path.isEmpty()) {
-                QMessageBox::warning(this, "Warning",
-                                     "No user XML provided and no file selected.");
-                return;
-            }
-
-            xmlContent = FileIO::readXML(path.toStdString(), SourceType::File);
+            QMessageBox::warning(this, "Warning",
+                "No user XML provided and no file selected.");
+            return;
         }
         xmlContent = XMLMinifier::minify(xmlContent);
 
@@ -217,15 +195,9 @@ void MainWindow::onCompressClicked()  {
             xmlContent = FileIO::readXML(userXml.toStdString(), SourceType::GUI);
         }
         else {
-            QString path = inputPath->text().trimmed();
-
-            if (path.isEmpty()) {
-                QMessageBox::warning(this, "Warning",
-                                     "No user XML provided and no file selected.");
-                return;
-            }
-
-            xmlContent = FileIO::readXML(path.toStdString(), SourceType::File);
+            QMessageBox::warning(this, "Warning",
+                "No user XML provided and no file selected.");
+            return;
         }
 
         // TODO: add button logic here
@@ -245,15 +217,9 @@ void MainWindow::onDecompressClicked()   {
             xmlContent = FileIO::readXML(userXml.toStdString(), SourceType::GUI);
         }
         else {
-            QString path = inputPath->text().trimmed();
-
-            if (path.isEmpty()) {
-                QMessageBox::warning(this, "Warning",
-                                     "No user XML provided and no file selected.");
-                return;
-            }
-
-            xmlContent = FileIO::readXML(path.toStdString(), SourceType::File);
+            QMessageBox::warning(this, "Warning",
+                "No user XML provided and no file selected.");
+            return;
         }
         // TODO: add button logic here
         saveOutputToFile(xmlContent);
