@@ -13,9 +13,15 @@ Node::Node(char c, int f, Node* l, Node* r) {
 }
 
 //Overload () to return true if the frequency of l is greater than r
-bool Compare::operator()(Node* l, Node* r) {
-    return l->freq > r->freq;
+// bool Compare::operator()(Node* l, Node* r) {
+//     return l->freq > r->freq;
+// }
+bool Compare::operator()(Node* a, Node* b) {
+    if (a->freq == b->freq)
+        return a->ch > b->ch;   // tie breaker
+    return a->freq > b->freq;
 }
+
 
 // Generates binary codes from the Tree and populates huffmanCode map
 void XMLCompressor::generateCodes(Node* root, string str) {
@@ -82,7 +88,9 @@ void XMLCompressor::writeCompressedFile(const string& text, const string& output
 
     //write the frequency map
     for (auto const& [key, val] : freqMap) {
-        out.write(&key, sizeof(char));
+       // out.write(&key, sizeof(char));
+        out.put(static_cast<char>(key));
+
         out.write(reinterpret_cast<const char*>(&val), sizeof(int));
     }
 
@@ -127,8 +135,9 @@ void XMLCompressor::compress(const string& inputFile, const string& outputFile) 
     in.close();
 
     // Minify the XML (Pre-processing for maximum compression)
-    XMLMinifier minifier;
-    string text = minifier.minify(rawText);
+ //   XMLMinifier minifier;
+   // string text = minifier.minify(rawText);
+    string text = rawText;
 
     if (text.empty()) {
         return;
@@ -136,7 +145,7 @@ void XMLCompressor::compress(const string& inputFile, const string& outputFile) 
 
     // Count Frequencies
     freqMap.clear();
-    for (char c : text) {
+    for (unsigned char c : text) {
         freqMap[c]++;
     }
 
