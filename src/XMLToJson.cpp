@@ -45,6 +45,20 @@ void buildJsonFromTree(__shared_ptr<XMLNode> node, int level, string& jsonBuilde
         jsonBuilder += indent + "    ]\n" + indent + "}";
     }
 }
+string convertXMLToJSON(const string& xmlContent) {
+    XMLParser parser;
+    shared_ptr<XMLNode> root = parser.parse(xmlContent);
+
+    // Basic error handling for empty or failed parses
+    if (!root) return "{}";
+
+    // Start building the JSON string
+    string finalJson = "{\n";
+    buildJsonFromTree(root, 1, finalJson, false);
+    finalJson += "\n}";
+    
+    return finalJson;
+}
 
 
 
