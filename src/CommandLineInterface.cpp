@@ -1,9 +1,11 @@
 #include "../include/CommandLineInterface.hpp"
 #include <iostream>
 #include <vector>
-#include <fstream>
 
-int CommandLineInterface::run(int argc, char* argv[]) {
+XMLCompressor CommandLineInterface::compressor;
+XMLDecompressor CommandLineInterface::decompressor;
+
+int CommandLineInterface::run(const int argc, char* argv[]) {
 
     if (argc < 3) {
         std::cout << "Invalid command\n";
@@ -22,6 +24,11 @@ int CommandLineInterface::run(int argc, char* argv[]) {
         if (arg == "-f") fix = true;
     }
 
+    if(command == "decompress"){
+        decompressor.decompress(inputFile,outputFile);
+        return 0;
+    }
+
     // Load file
     string content = FileIO::readXML(inputFile, SourceType::File);
     string output;
@@ -33,16 +40,14 @@ int CommandLineInterface::run(int argc, char* argv[]) {
         output = XMLFormatter::format(content);
     }
     else if (command == "json") {
-       // Convert XML to JSON
+       output = convertXMLToJSON(content);
     }
     else if (command == "mini") {
         output = XMLMinifier::minify(content);
     }
     else if(command == "compress"){
-        // Compress XML
-    }
-    else if(command == "decompress"){
-        // Decompress XML
+        compressor.compress(content,outputFile);
+        return 0;
     }
     else {
         std::cout << "Unknown command\n";

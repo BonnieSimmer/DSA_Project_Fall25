@@ -5,7 +5,6 @@
 #include <QWidget>
 #include <QHBoxLayout>
 #include <QFileDialog>
-#include <QFile>
 #include <QMessageBox>
 #include <QPushButton>
 
@@ -89,18 +88,29 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent){
 
 void MainWindow::onBrowseClicked()
 {
-    QString file = QFileDialog::getOpenFileName(this, "Select XML File", "", "XML Files (*.xml)");
+    QString file = QFileDialog::getOpenFileName(this, "Select XML File", "", "XML Files (*.xml);;Compressed Files (*.comp)");
 
     if (!file.isEmpty()) {
         inputPath->setText(file);
-        QString content = QString::fromStdString(FileIO::readXML(file.toStdString(), SourceType::File));
-        inputText->setText(content);
+        if (file.endsWith(".xml")) {
+            type = Type::XML;
+            QString content = QString::fromStdString(FileIO::readXML(file.toStdString(), SourceType::File));
+            inputText->setText(content);
+            return;
+        }
+        type = Type::OTHER;
+        inputText->clear();
     }
 }
 
 void MainWindow::onCheckClicked()
 {
     try {
+        if (type == Type::OTHER) {
+            QMessageBox::warning(this, "Warning",
+                            "No XML file is selected.");
+            return;
+        }
         string xmlContent;
         QString userXml = inputText->toPlainText().trimmed();
 
@@ -124,6 +134,11 @@ void MainWindow::onCheckClicked()
 void MainWindow::onPrettifyClicked()
 {
     try {
+        if (type == Type::OTHER) {
+            QMessageBox::warning(this, "Warning",
+                            "No XML file is selected.");
+            return;
+        }
         string xmlContent;
         QString userXml = inputText->toPlainText().trimmed();
 
@@ -145,6 +160,11 @@ void MainWindow::onPrettifyClicked()
 
 void MainWindow::onConvertClicked() {
     try {
+        if (type == Type::OTHER) {
+            QMessageBox::warning(this, "Warning",
+                            "No XML file is selected.");
+            return;
+        }
         string xmlContent;
         QString userXml = inputText->toPlainText().trimmed();
 
@@ -156,7 +176,9 @@ void MainWindow::onConvertClicked() {
                 "No user XML provided and no file selected.");
             return;
         }
-        // TODO: add button logic here
+        xmlContent = convertXMLToJSON(xmlContent);
+        type = Type::JSON;
+
         printOutput(xmlContent);
     }
     catch (const exception &ex) {
@@ -166,6 +188,11 @@ void MainWindow::onConvertClicked() {
 
 void MainWindow::onMinifyClicked()  {
     try {
+        if (type == Type::OTHER) {
+            QMessageBox::warning(this, "Warning",
+                            "No XML file is selected.");
+            return;
+        }
         string xmlContent;
         QString userXml = inputText->toPlainText().trimmed();
 
@@ -188,6 +215,11 @@ void MainWindow::onMinifyClicked()  {
 
 void MainWindow::onCompressClicked()  {
     try {
+        if (type == Type::OTHER) {
+            QMessageBox::warning(this, "Warning",
+                            "No XML file is selected.");
+            return;
+        }
         string xmlContent;
         QString userXml = inputText->toPlainText().trimmed();
 
@@ -199,9 +231,7 @@ void MainWindow::onCompressClicked()  {
                 "No user XML provided and no file selected.");
             return;
         }
-
-        // TODO: add button logic here
-        saveOutputToFile(xmlContent);
+        saveOutputToFile(xmlContent,true);
     }
     catch (const exception &ex) {
         QMessageBox::critical(this, "Error", ex.what());
@@ -210,19 +240,20 @@ void MainWindow::onCompressClicked()  {
 
 void MainWindow::onDecompressClicked()   {
     try {
-        string xmlContent;
-        QString userXml = inputText->toPlainText().trimmed();
+        if (type == Type::OTHER) {
+            QString savePath = QFileDialog::getSaveFileName(this, "Save Output", "", "XML Files (*.xml)");
+            if (savePath.isEmpty()) {
+                return;
+            }
+            decompressor.decompress(inputPath->text().toStdString(), savePath.toStdString());
+            string xmlContent = FileIO::readXML(savePath.toStdString(), SourceType::File);
+            printOutput(xmlContent);
+            QMessageBox::information(this, "Success", "Decompressed Successfully");
 
-        if (!userXml.isEmpty()) {
-            xmlContent = FileIO::readXML(userXml.toStdString(), SourceType::GUI);
-        }
-        else {
+        } else {
             QMessageBox::warning(this, "Warning",
-                "No user XML provided and no file selected.");
-            return;
+                            "No Compressed XML file is selected.");
         }
-        // TODO: add button logic here
-        saveOutputToFile(xmlContent);
     }
     catch (const exception &ex) {
         QMessageBox::critical(this, "Error", ex.what());
@@ -231,7 +262,8 @@ void MainWindow::onDecompressClicked()   {
 
 void MainWindow::onSaveClicked()
 {
-    saveOutputToFile(outputText->toPlainText().toStdString());
+    string outputType = type == Type::XML ? "XML Files (*.xml)" : "JSON Files (*.json)";
+    saveOutputToFile(outputText->toPlainText().toStdString(),false ,outputType);
 }
 
 void MainWindow::printOutput(const string& data) const {
@@ -239,19 +271,24 @@ void MainWindow::printOutput(const string& data) const {
     outputText->setPlainText(result);
 }
 
-void MainWindow::saveOutputToFile(const string &data) {
-    QString savePath = QFileDialog::getSaveFileName(this, "Save Output", "", "XML Files (*.xml);;JSON Files (*.json)");
+void MainWindow::saveOutputToFile(const string &data, bool compress, const string &outputFileType) {
+    QString savePath = QFileDialog::getSaveFileName(this, "Save Output", "", outputFileType.data());
 
     if (savePath.isEmpty()) {
         return;
     }
-
     try {
-        string status = FileIO::writeData(
-            savePath.toStdString(),
-            data,
-            SourceType::File
-        );
+        string status;
+        if (compress) {
+            compressor.compress(data,savePath.toStdString());
+            status = "Compressed Successfully";
+        } else {
+            status = FileIO::writeData(
+           savePath.toStdString(),
+           data,
+           SourceType::File
+           );
+        }
 
         QMessageBox::information(this, "Success", QString::fromStdString(status));
     }

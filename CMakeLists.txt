@@ -26,6 +26,11 @@ add_executable(DSA_Project_Fall25 main.cpp
         src/XMLFormatter.cpp
         src/XMLParsser.cpp
         src/XMLNode.cpp
+        src/XMLCompressor.cpp
+        include/XMLCompressor.hpp
+        src/XMLDecompression.cpp
+        include/XMLToJson.hpp
+        src/XMLToJson.cpp
 )
 
 set_target_properties(DSA_Project_Fall25 PROPERTIES
