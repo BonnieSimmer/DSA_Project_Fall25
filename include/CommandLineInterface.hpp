@@ -7,6 +7,8 @@
 #include "XMLCompressor.hpp"
 #include "XMLDecompression.hpp"
 #include "XMLToJson.hpp"
+#include "GraphVisualizer.h"
+#include "NetworkAnalyzer.hpp"
 
 class CommandLineInterface {
 
