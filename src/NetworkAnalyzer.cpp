@@ -19,7 +19,7 @@ const User* NetworkAnalyzer::getUserById(int id) const {
 void NetworkAnalyzer::calculateFollowing() {
     for (const auto& user : users) {
         for (const auto& follower : user.followers) {
-            followingCount[follower.id]++;
+            followingCount[follower.getId()]++;
         }
     }
 }
@@ -41,51 +41,46 @@ vector<int> NetworkAnalyzer::intersectVectors(const vector<int>& a,
 
 // =================Most Influencer=====================
 void NetworkAnalyzer::MostInfluencerUser() const {
-    const User* best = nullptr;
+    size_t maxFollowers = 0;
 
     for (const auto& user : users) {
-        if (!best || user.followers.size() > best->followers.size())
-            best = &user;
+        maxFollowers = max(maxFollowers, user.followers.size());
     }
 
-    if (best) {
-        int following = followingCount.count(best->id)
-                        ? followingCount.at(best->id) : 0;
-
-        cout << "\n========= MOST INFLUENCER =========";
-        cout << "\nID: " << best->id
-             << "\nName: " << best->name
-             << "\nNumber of Followers: " << best->followers.size()
-             << endl;
+    cout << "\n========= MOST INFLUENCER USERS =========\n";
+    for (const auto& user : users) {
+        if (user.followers.size() == maxFollowers) {
+            cout << "ID: " << user.id
+                 << "\nName: " << user.name
+                 << "\nNumber of Followers: " << user.followers.size()
+                 << "\n-------------------------\n";
+        }
     }
 }
 //====================Most Active=================
 void NetworkAnalyzer::MostActiveUser() const {
-    const User* best = nullptr;
     int maxActivity = -1;
-
     for (const auto& user : users) {
-        int following = followingCount.count(user.id)
-                        ? followingCount.at(user.id) : 0;
-
+        int following = followingCount.count(user.id) ? followingCount.at(user.id) : 0;
         int activity = user.followers.size() + following;
-
-        if (activity > maxActivity) {
-            maxActivity = activity;
-            best = &user;
-        }
+        maxActivity = max(maxActivity, activity);
     }
 
-    if (best) {
-        int following = followingCount.count(best->id)
-                        ? followingCount.at(best->id) : 0;
 
-        cout << "\n========= MOST ACTIVE =========";
-        cout << "\nID: " << best->id
-             << "\nName: " << best->name
-             << "\nNumber of Followers: " << best->followers.size()
-             << "\nNumber of Following: " << following
-             << endl;
+    cout << "\n========= MOST ACTIVE USER(S) =========\n";
+
+    for (const auto& user : users) {
+        int following = followingCount.count(user.id) ? followingCount.at(user.id) : 0;
+        int activity = user.followers.size() + following;
+
+        if (activity == maxActivity) {
+            cout << "\nID: " << user.id
+                 << "\nName: " << user.name
+                 << "\nNumber of Followers: " << user.followers.size()
+                 << "\nNumber of Following: " << following
+                 << "\nActivity (Followers + Following): " << activity
+                 << "\n------------------------------------";
+        }
     }
 }
 
@@ -105,7 +100,7 @@ vector<User> NetworkAnalyzer::mutualFollowers(const vector<int>& userIds) {
             if (user.id == id) {
                 vector<int> f;
                 for (const auto& fol : user.followers)
-                    f.push_back(fol.id);
+                    f.push_back(fol.getId());
 
                 followersLists.push_back(f);
                 break;
@@ -153,7 +148,7 @@ vector<User> NetworkAnalyzer::suggestUsersToFollow(int userId) {
     for (const auto& user : users) {
         if (user.id == userId) {
             for (const auto& f : user.followers)
-                directFollowers.push_back(f.id);
+                directFollowers.push_back(f.getId());
             break;
         }
     }
@@ -164,11 +159,11 @@ vector<User> NetworkAnalyzer::suggestUsersToFollow(int userId) {
             if (user.id == followerId) {
                 for (const auto& f : user.followers) {
                     // avoid duplicates & avoid suggesting himself
-                    if (f.id != userId &&
+                    if (f.getId() != userId &&
                         find(directFollowers.begin(),
                              directFollowers.end(),
-                             f.id) == directFollowers.end()) {
-                        suggestions.push_back(f.id);
+                             f.getId()) == directFollowers.end()) {
+                        suggestions.push_back(f.getId());
                     }
                 }
             }
