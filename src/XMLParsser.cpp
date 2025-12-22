@@ -15,73 +15,46 @@ string XMLParser::extractTagName(const std::string& tagContent) {
 
 // -------- Parse XML from file or string ------------------- //
 shared_ptr<XMLNode> XMLParser::parse(const string& input){
-    std::istringstream stream(input);
-    std::string line;
-    
+    size_t pos = 0;
     std::stack<std::shared_ptr<XMLNode>> nodeStack; //to keep track of current node
     shared_ptr<XMLNode> root = nullptr;
-    int lineNumber = 0;
-    
-    while (std::getline(stream, line)) {
-        lineNumber++;
-        
-        if(line.empty()) continue;
-        
-        // Find first non-whitespace character
-        size_t firstNonSpace = line.find_first_not_of(" \t\r\n");
-        if(firstNonSpace == string::npos) continue;
-        
-        std::string trimmedLine = line.substr(firstNonSpace);
-        
-        if(trimmedLine[0] != '<') continue;
-        // Check if closing tag
-        if(trimmedLine[1] == '/'){
-            if(!nodeStack.empty()){
+
+    while ((pos = input.find('<', pos)) != string::npos) {
+        size_t endTag = input.find('>', pos);
+        if (endTag == string::npos) break;
+
+        std::string fullTag = input.substr(pos, endTag - pos + 1);
+
+        if (fullTag[1] == '/') { // Check if closing tag
+            if (!nodeStack.empty()) {
                 nodeStack.pop();
             }
-            continue;
+            pos = endTag + 1;
         }
-        
-        // Extract tag name
-        std::string tagName = extractTagName(trimmedLine);
-        if(tagName.empty()) continue;
-        
-        auto newNode = std::make_shared<XMLNode>(tagName, lineNumber);
-        
-        // Extract text content between opening and closing tags on same line
-        size_t openEnd = trimmedLine.find('>');
-        size_t closeStart = trimmedLine.rfind('<');
-        
-        if(openEnd != string::npos && closeStart != string::npos && openEnd < closeStart){
-            string content = trimmedLine.substr(openEnd + 1, closeStart - openEnd - 1);
+        else { // Opening tag
+            string tagName = extractTagName(fullTag);
+            auto newNode = std::make_shared<XMLNode>(tagName);
 
-            // Trim content
-            size_t contentStart = content.find_first_not_of(" \t\n\r");
-            size_t contentEnd = content.find_last_not_of(" \t\n\r");
-            if(contentStart != string::npos){
-                content = content.substr(contentStart, contentEnd - contentStart + 1);
+            // Handle root logic
+            if (!root) root = newNode;
+            if (!nodeStack.empty()) nodeStack.top()->addChild(newNode);
+
+            // Check for text content before the next tag
+            size_t nextOpen = input.find('<', endTag);
+            if (nextOpen != string::npos && nextOpen > endTag + 1) {
+                string text = input.substr(endTag + 1, nextOpen - endTag - 1);
+                // Apply your trimming logic here...
+                newNode->setText(trim(text));
             }
-            newNode->setText(content);
-        }
-        
-        // Build tree structure
-        if(root == nullptr){
-            root = newNode;
-            nodeStack.push(root);
-        } else if(!nodeStack.empty()){
-            nodeStack.top()->addChild(newNode);
-            
-            // Check if self-closing (has content on same line or ends with />)
-            bool selfClosing = (trimmedLine.find("/>") != string::npos) || 
-                             (openEnd != string::npos && closeStart != string::npos && closeStart > openEnd);
-            
-            if(!selfClosing)
+
+            // If not self-closing (/>), push to stack
+            if (fullTag.find("/>") == string::npos) {
                 nodeStack.push(newNode);
+            }
+            pos = endTag + 1;
         }
     }
-    // Extract users from the tree
-    if(root)    
-        extractUsersFromTree(root);
+    if(root) extractUsersFromTree(root);
     return root;
 }
 
@@ -148,4 +121,17 @@ void XMLParser::extractUsersFromTree(const std::shared_ptr<XMLNode>& root) {
         }
         users.push_back(user);
     }
-}       
+}
+
+std::string XMLParser::trim(const std::string& str) {
+    const std::string whitespace = " \t\r\n";
+    size_t first = str.find_first_not_of(whitespace);
+
+    // If string is all whitespace
+    if (first == std::string::npos) {
+        return "";
+    }
+
+    size_t last = str.find_last_not_of(whitespace);
+    return str.substr(first, (last - first + 1));
+}

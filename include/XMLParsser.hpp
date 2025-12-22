@@ -64,6 +64,9 @@ private:
     Post post;
     Follower follower;
     void extractUsersFromTree(const std::shared_ptr<XMLNode>& root);
+
+    static std::string trim(const std::string &str);
+
     string extractTagName(const std::string& tagContent);
 
 public:

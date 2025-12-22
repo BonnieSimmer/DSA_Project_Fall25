@@ -31,6 +31,10 @@ add_executable(DSA_Project_Fall25 main.cpp
         src/XMLDecompression.cpp
         include/XMLToJson.hpp
         src/XMLToJson.cpp
+        src/NetworkAnalyzer.cpp
+        src/GraphVisualizer.cpp
+        include/GraphVisualizer.h
+        include/AppMode.h
 )
 
 set_target_properties(DSA_Project_Fall25 PROPERTIES
