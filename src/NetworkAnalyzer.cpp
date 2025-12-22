@@ -130,8 +130,8 @@ string NetworkAnalyzer::mutualFollowers(const vector<int>& userIds) {
     for (int id : result) {
         for (const auto& user : users) {
             if (user.id == id)
-                out << "ID: " << user.id
-                    << " | Name: " << user.name << "\n";
+                out << "\nID: " << user.id
+                    << "\nName: " << user.name << "\n";
         }
     }
     return out.str();
