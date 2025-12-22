@@ -66,4 +66,6 @@ void GraphVisualizer::renderGraph(const std::string& dotFile, const std::string&
         std::string stdErr = process.readAllStandardError().toStdString();
         reportError("Graphviz Error", "The dot tool returned an error: " + stdErr);
     }
+
+    reportInfo("Success", "Graph saved to " + outFile);
 }

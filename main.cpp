@@ -23,3 +23,13 @@ void reportError(const std::string& title, const std::string& message) {
         std::cerr << "\033[1;31m[ERROR]: " << title << " - " << message << "\033[0m" << std::endl;
     }
 }
+
+
+
+void reportInfo(const std::string& title, const std::string& message) {
+    if (currentMode == AppMode::GUI) {
+        QMessageBox::information(nullptr, QString::fromStdString(title), QString::fromStdString(message));
+    } else {
+        std::cout << title << " - " << message << std::endl;
+    }
+}

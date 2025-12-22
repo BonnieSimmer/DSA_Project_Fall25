@@ -13,5 +13,6 @@ enum class AppMode {
 extern AppMode currentMode;
 
 void reportError(const std::string& title, const std::string& message);
+void reportInfo(const std::string& title, const std::string& message);
 
 #endif //DSA_PROJECT_FALL25_APPMODE_H

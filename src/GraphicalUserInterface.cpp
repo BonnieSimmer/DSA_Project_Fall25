@@ -339,8 +339,7 @@ void MainWindow::onDecompressClicked()   {
             decompressor.decompress(inputPath->text().toStdString(), savePath.toStdString());
             string xmlContent = FileIO::readXML(savePath.toStdString(), SourceType::File);
             printOutput(xmlContent);
-            QMessageBox::information(this, "Success", "Decompressed Successfully");
-
+            reportInfo("Success","Decompressed Successfully");
         } else {
             QMessageBox::warning(this, "Warning",
                             "No Compressed XML file is selected.");
@@ -380,8 +379,7 @@ void MainWindow::saveOutputToFile(const string &data, bool compress, const strin
            SourceType::File
            );
         }
-
-        QMessageBox::information(this, "Success", QString::fromStdString(status));
+        reportInfo("Success",status);
     }
     catch (const exception &ex) {
         reportError("Error", ex.what());
@@ -470,7 +468,6 @@ void MainWindow::onDrawGraphClicked() {
 
     if (!savePath.isEmpty()) {
         GraphVisualizer::draw(parser.users, savePath.toStdString());
-        QMessageBox::information(this, "Success", "Graph saved to " + savePath);
     }
 }
 
