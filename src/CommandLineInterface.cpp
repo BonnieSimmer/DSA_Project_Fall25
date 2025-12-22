@@ -8,19 +8,19 @@ XMLDecompressor CommandLineInterface::decompressor;
 int CommandLineInterface::run(const int argc, char* argv[]) {
 
     if (argc < 3) {
-        std::cout << "Invalid command\n";
+        cout << "Invalid command\n";
         return 0;
     }
 
-    std::string command = argv[1];
+    string command = argv[1];
 
-    std::string inputFile, outputFile;
+    string inputFile, outputFile;
     vector<int> ids;
     bool fix = false;
     bool is_word;
 
     for(int i = 1; i < argc; i++) {
-        std::string arg = argv[i];
+        string arg = argv[i];
         if (arg == "-i") inputFile = argv[++i];
         if (arg == "-o") outputFile = argv[++i];
         if (arg == "-f") fix = true;
@@ -63,13 +63,13 @@ int CommandLineInterface::run(const int argc, char* argv[]) {
         XMLParser parser;
         parser.parse(content);
         NetworkAnalyzer analyzer(parser.users);
-        analyzer.MostActiveUser();
+        cout << analyzer.MostActiveUser();
         return 0;
     } else if (command == "most_influencer") {
         XMLParser parser;
         parser.parse(content);
         NetworkAnalyzer analyzer(parser.users);
-        analyzer.MostInfluencerUser();
+        cout << analyzer.MostInfluencerUser();
         return 0;
     } else if (command == "mutual") {
         if (!ids.empty()) {
@@ -77,29 +77,25 @@ int CommandLineInterface::run(const int argc, char* argv[]) {
             parser.parse(content);
             NetworkAnalyzer analyzer(parser.users);
 
-            for (auto mutual = analyzer.mutualFollowers(ids); const auto& u : mutual) {
-                cout << u.id << " " << u.name << endl;
-            }
+            cout << analyzer.mutualFollowers(ids);
             return 0;
         }
-        std::cout << "Please provide Ids to find mutual followers between them\n";
+        cout << "Please provide Ids to find mutual followers between them\n";
     } else if (command == "suggest") {
         if (!ids.empty()) {
             XMLParser parser;
             parser.parse(content);
             NetworkAnalyzer analyzer(parser.users);
 
-            for (auto suggested = analyzer.suggestUsersToFollow(2); const auto& u : suggested) {
-                cout << u.id << " " << u.name << endl;
-            }
+            cout << analyzer.suggestUsersToFollow(ids[0]) << endl;
             return 0;
         }
-        std::cout << "Please provide the Id of the user you want suggestions for\n";
+        cout << "Please provide the Id of the user you want suggestions for\n";
 
     } else if (command == "search") {
         // TODO implement search
     } else {
-        std::cout << "Unknown command\n";
+        cout << "Unknown command\n";
     }
 
     FileIO::writeData(outputFile, output, SourceType::File);
