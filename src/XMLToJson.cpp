@@ -7,8 +7,18 @@
 
 using namespace std;
 
+string trim(const string& s) {
+    size_t start = s.find_first_not_of(" \n\t\r");
+    size_t end = s.find_last_not_of(" \n\t\r");
+
+    if (start == string::npos || end == string::npos)
+        return "";
+
+    return s.substr(start, end - start + 1);
+}
+
 void buildJsonFromTree(__shared_ptr<XMLNode> node, int level, string& jsonBuilder, bool isArrayElement){
-    string indent(level *4, ' ');     //indentation for readability
+    string indent(level * 4, ' ');     //indentation for readability
 
     if(!isArrayElement)
         jsonBuilder += indent + "\"" + node->tagname + "\": ";
@@ -17,7 +27,8 @@ void buildJsonFromTree(__shared_ptr<XMLNode> node, int level, string& jsonBuilde
 
     //case 1:no children
     if(node->children.empty()){
-        jsonBuilder += "\"" + node->text + "\"";
+        string cleanText = trim(node->text);
+        jsonBuilder += "\"" + cleanText + "\"";
         return;
     }    
 
@@ -35,7 +46,8 @@ void buildJsonFromTree(__shared_ptr<XMLNode> node, int level, string& jsonBuilde
         jsonBuilder +=indent + "}";
     }
     else{
-        jsonBuilder += "{\n" + indent + "    \"" + node->children[0]->tagname + "\": [\n";
+        jsonBuilder += "{\n";
+        jsonBuilder += indent + "    \"" + node->children[0]->tagname + "\": [\n";
         for (size_t i = 0; i < node->children.size(); ++i) {
             buildJsonFromTree(node->children[i], level + 2, jsonBuilder, true);
             
