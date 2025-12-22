@@ -1,6 +1,7 @@
 #ifndef XMLNODE_H
 #define XMLNODE_H
-#include <bits/stdc++.h>
+#include <vector>
+#include <map>
 #include <memory>
 
 using namespace std;

@@ -2,8 +2,8 @@
 #include <string>
 #include <vector>
 #include <memory>
-#include "XMLNode.hpp"
-#include "XMLParsser.hpp"
+#include "../include/XMLNode.hpp"
+#include "../include/XMLParsser.hpp"
 
 using namespace std;
 

@@ -2,7 +2,7 @@
 // Created by menna on 12/17/2025.
  //#include "include/XMLDecompression.hpp"
 
-#include "XMLDecompression.hpp"
+#include "../include/XMLDecompression.hpp"
 #include <fstream>
 #include <iostream>
 DNode* XMLDecompressor::buildTree() {

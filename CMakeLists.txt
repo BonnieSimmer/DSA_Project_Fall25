@@ -35,11 +35,27 @@ add_executable(DSA_Project_Fall25 main.cpp
         src/GraphVisualizer.cpp
         include/GraphVisualizer.h
         include/AppMode.h
+        include/XMLNode.hpp
 )
 
 set_target_properties(DSA_Project_Fall25 PROPERTIES
         OUTPUT_NAME "xml_editor"
 )
+
+if(WIN32)
+    get_target_property(_qmake_executable Qt6::qmake IMPORTED_LOCATION)
+    get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
+    find_program(WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${_qt_bin_dir}")
+
+    add_custom_command(TARGET DSA_Project_Fall25 POST_BUILD
+            COMMAND "${WINDEPLOYQT_EXECUTABLE}"
+            --verbose 1
+            --compiler-runtime
+            --dir "${CMAKE_CURRENT_BINARY_DIR}"
+            "$<TARGET_FILE:DSA_Project_Fall25>"
+            COMMENT "Deploying Qt dependencies and MinGW runtimes to build directory..."
+    )
+endif()
 
 target_link_libraries(DSA_Project_Fall25
         Qt::Core
