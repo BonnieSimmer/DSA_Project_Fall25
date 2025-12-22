@@ -185,8 +185,8 @@ string NetworkAnalyzer::suggestUsersToFollow(int userId) {
     for (int id : suggestions) {
         for (const auto& user : users) {
             if (user.id == id)
-                out << "ID: " << user.id
-                    << " | Name: " << user.name << "\n";
+                out << "\nID: " << user.id
+                    << "\nName: " << user.name << "\n";
         }
     }
     return out.str();
