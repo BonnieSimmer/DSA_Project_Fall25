@@ -28,11 +28,11 @@ private:
 public:
     explicit NetworkAnalyzer(const vector<User>& users);
 
-    void MostInfluencerUser() const;
-    void MostActiveUser() const;
+    string MostInfluencerUser() const;
+    string MostActiveUser() const;
 
-    vector<User> mutualFollowers(const vector<int> &userIds);
-    vector<User> suggestUsersToFollow(int userId);
+    string mutualFollowers(const vector<int> &userIds);
+    string suggestUsersToFollow(int userId);
 
 };
 

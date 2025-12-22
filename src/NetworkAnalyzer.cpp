@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <sstream>
 
 NetworkAnalyzer::NetworkAnalyzer(const vector<User>& users)
         : users(users) {
@@ -40,25 +41,28 @@ vector<int> NetworkAnalyzer::intersectVectors(const vector<int>& a,
 }
 
 // =================Most Influencer=====================
-void NetworkAnalyzer::MostInfluencerUser() const {
+string NetworkAnalyzer::MostInfluencerUser() const {
+    stringstream out;
     size_t maxFollowers = 0;
 
     for (const auto& user : users) {
         maxFollowers = max(maxFollowers, user.followers.size());
     }
 
-    cout << "\n========= MOST INFLUENCER USERS =========\n";
+    out << "\n========= MOST INFLUENCER USERS =========\n";
     for (const auto& user : users) {
         if (user.followers.size() == maxFollowers) {
-            cout << "ID: " << user.id
+            out << "ID: " << user.id
                  << "\nName: " << user.name
                  << "\nNumber of Followers: " << user.followers.size()
                  << "\n-------------------------\n";
         }
     }
+    return out.str();
 }
 //====================Most Active=================
-void NetworkAnalyzer::MostActiveUser() const {
+string NetworkAnalyzer::MostActiveUser() const {
+    stringstream out;
     int maxActivity = -1;
     for (const auto& user : users) {
         int following = followingCount.count(user.id) ? followingCount.at(user.id) : 0;
@@ -67,14 +71,14 @@ void NetworkAnalyzer::MostActiveUser() const {
     }
 
 
-    cout << "\n========= MOST ACTIVE USER(S) =========\n";
+    out << "\n========= MOST ACTIVE USER(S) =========\n";
 
     for (const auto& user : users) {
         int following = followingCount.count(user.id) ? followingCount.at(user.id) : 0;
         int activity = user.followers.size() + following;
 
         if (activity == maxActivity) {
-            cout << "\nID: " << user.id
+            out << "\nID: " << user.id
                  << "\nName: " << user.name
                  << "\nNumber of Followers: " << user.followers.size()
                  << "\nNumber of Following: " << following
@@ -82,10 +86,12 @@ void NetworkAnalyzer::MostActiveUser() const {
                  << "\n------------------------------------";
         }
     }
+    return out.str();
 }
 
 //====================Mutual followers between N users====================
-vector<User> NetworkAnalyzer::mutualFollowers(const vector<int>& userIds) {
+string NetworkAnalyzer::mutualFollowers(const vector<int>& userIds) {
+    stringstream out;
 
     if (userIds.size() < 2) {
         cout << "Please enter 2 or more users.\n";
@@ -117,30 +123,25 @@ vector<User> NetworkAnalyzer::mutualFollowers(const vector<int>& userIds) {
     }
 
     if (result.empty()) {
-        cout << "\nThere are no mutual followers.\n";
-        return {};
+        return "\nThere are no mutual followers.\n";
+
     }
 
-    // convert IDs → User objects
-    vector<User> mutualUsers;
     for (int id : result) {
         for (const auto& user : users) {
-            if (user.id == id) {
-                mutualUsers.push_back(user);
-                break;
-            }
+            if (user.id == id)
+                out << "ID: " << user.id
+                    << " | Name: " << user.name << "\n";
         }
     }
-    cout<<"\n========= Mutual Users =========\n";
-    return mutualUsers;
+    return out.str();
 }
 
 
 
 //===================Suggest users to follow (followers of followers)=====================
 
-vector<User> NetworkAnalyzer::suggestUsersToFollow(int userId) {
-    cout <<"\n========= Suggested Users =========\n";
+string NetworkAnalyzer::suggestUsersToFollow(int userId) {
     vector<int> directFollowers;
     vector<int> suggestions;
 
@@ -175,20 +176,18 @@ vector<User> NetworkAnalyzer::suggestUsersToFollow(int userId) {
     suggestions.erase(unique(suggestions.begin(), suggestions.end()),
                       suggestions.end());
 
-    // convert IDs → Users
-    vector<User> result;
+    stringstream out;
+    out << "SUGGESTED USERS TO FOLLOW\n";
+
+    if (suggestions.empty())
+        return out.str() + "None\n";
+
     for (int id : suggestions) {
         for (const auto& user : users) {
-            if (user.id == id) {
-                result.push_back(user);
-                break;
-            }
+            if (user.id == id)
+                out << "ID: " << user.id
+                    << " | Name: " << user.name << "\n";
         }
     }
-    // If no suggestions, add "none" to the list
-    if (result.empty()) {
-        cout<<"None";
-    }
-
-    return result;
+    return out.str();
 }
