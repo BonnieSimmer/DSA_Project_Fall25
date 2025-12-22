@@ -36,7 +36,7 @@ private:
     void deleteTree(Node* root);
 
 public:
-    void compress(const string& inputFile, const string& outputFile);
+    void compress(const string& data, const string& outputFile);
 };
 
 #endif

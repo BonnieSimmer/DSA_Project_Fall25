@@ -1,5 +1,5 @@
-#include "XMLCompressor.hpp"
-#include "XMLMinifier.hpp"
+#include "../include/XMLCompressor.hpp"
+#include "../include/XMLMinifier.hpp"
 #include <fstream>
 #include <iterator>
 
@@ -125,22 +125,9 @@ void XMLCompressor::writeCompressedFile(const string& text, const string& output
 }
 
 //Compresses the content of the inputFile (XML/JSON) and saves it to outputFile.
-void XMLCompressor::compress(const string& inputFile, const string& outputFile) {
-    // Read raw file
-    ifstream in(inputFile, ios::binary);
-    if (!in) {
-        return;
-    }
-    string rawText((istreambuf_iterator<char>(in)), istreambuf_iterator<char>());
-    in.close();
-
-    // Minify the XML (Pre-processing for maximum compression)
- //   XMLMinifier minifier;
-   // string text = minifier.minify(rawText);
-    string text = rawText;
-
+void XMLCompressor::compress(const string& text, const string& outputFile) {
     if (text.empty()) {
-        return;
+        throw runtime_error("There is no data to compress!");
     }
 
     // Count Frequencies
