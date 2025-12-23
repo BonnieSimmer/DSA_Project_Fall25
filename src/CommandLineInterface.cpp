@@ -1,4 +1,5 @@
 #include "../include/CommandLineInterface.hpp"
+#include "ParseError.hpp"
 #include <iostream>
 #include <vector>
 
@@ -35,13 +36,17 @@ int CommandLineInterface::run(const int argc, char* argv[]) {
         return 0;
     }
 
+
     // Load file
     string content = FileIO::readXML(inputFile, SourceType::File);
     string output;
+    string result;
 
     if (command == "verify") {
         // TODO Verify XML
     }
+}
+    
     else if (command == "format") {
         output = XMLFormatter::format(content);
     }
@@ -98,6 +103,9 @@ int CommandLineInterface::run(const int argc, char* argv[]) {
         cout << "Unknown command\n";
     }
 
-    FileIO::writeData(outputFile, output, SourceType::File);
+    // 4. Save to file (Only if output is not empty and outputFile was provided)
+    if (!outputFile.empty() && !output.empty()) {
+        FileIO::writeData(outputFile, output, SourceType::File);
+    }
     return 0;
 }

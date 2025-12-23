@@ -1,35 +1,43 @@
-#include "include/CommandLineInterface.hpp"
-#include "include/GraphicalUserInterface.h"
-#include "include/AppMode.h"
+// #include "include/CommandLineInterface.hpp"
+// #include "include/GraphicalUserInterface.h"
+
+// int main(int argc, char *argv[]) {
+//     if (argc > 1) {
+//         return CommandLineInterface::run(argc, argv);
+//     }
+//     return run_gui(argc, argv);
+// }
 
 #include <iostream>
-#include <QMessageBox>
+#include <string>
+#include <vector>
+#include "include\CommandLineInterface.hpp"
 
-AppMode currentMode = AppMode::GUI;
+int main() {
+    CommandLineInterface cli;
 
-int main(int argc, char *argv[]) {
-    if (argc > 1) {
-        currentMode = AppMode::CLI;
-        return CommandLineInterface::run(argc, argv);
-    }
-    currentMode = AppMode::GUI;
-    return run_gui(argc, argv);
-}
+    std::cout << "--- TEST 1: Verification (Output to console) ---" << std::endl;
+    // Simulating: xml_editor verify -i input_errors.xml
+    char* test1_argv[] = {
+        (char*)"xml_editor", 
+        (char*)"verify", 
+        (char*)"-i", 
+        (char*)"sample.xml"
+    };
+    cli.run(4, test1_argv);
 
-void reportError(const std::string& title, const std::string& message) {
-    if (currentMode == AppMode::GUI) {
-        QMessageBox::critical(nullptr, QString::fromStdString(title), QString::fromStdString(message));
-    } else {
-        std::cerr << "\033[1;31m[ERROR]: " << title << " - " << message << "\033[0m" << std::endl;
-    }
-}
+    std::cout << "\n--- TEST 2: Fixing (Output to file) ---" << std::endl;
+    // Simulating: xml_editor verify -i input_errors.xml -f -o output_fixed.xml
+    char* test2_argv[] = {
+        (char*)"xml_editor", 
+        (char*)"verify", 
+        (char*)"-i", 
+        (char*)"sample.xml", 
+        (char*)"-f", 
+        (char*)"-o", 
+        (char*)"testingOutput.xml"
+    };
+    cli.run(7, test2_argv);
 
-
-
-void reportInfo(const std::string& title, const std::string& message) {
-    if (currentMode == AppMode::GUI) {
-        QMessageBox::information(nullptr, QString::fromStdString(title), QString::fromStdString(message));
-    } else {
-        std::cout << title << " - " << message << std::endl;
-    }
+    return 0;
 }
