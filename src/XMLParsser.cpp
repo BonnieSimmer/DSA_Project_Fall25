@@ -5,11 +5,19 @@
 // --------  Extract tag name from tag string ------------------- //
 string XMLParser::extractTagName(const std::string& tagContent) {
     std::string name;
-    for(auto c: tagContent){
-        if(c == '<')    continue;
-        if(c == '>' || c == '/' || c == ' ' || c == '\t')   break;
-        else name += c;
-    }   
+    bool nameStarted = false;
+
+    for (auto c : tagContent) {
+        if (c == '<' || c == '/') {
+            if (!nameStarted) continue;
+            else break;
+        }
+        if (c == '>' || c == ' ' || c == '\t' || c == '\r' || c == '\n') {
+            break;
+        }
+        name += c;
+        nameStarted = true;
+    }
     return name;
 }
 

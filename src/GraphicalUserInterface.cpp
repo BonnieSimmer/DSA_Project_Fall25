@@ -9,6 +9,7 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QLabel>
+#include <QTextBlock>
 
 
 int run_gui(int argc, char *argv[]) {
@@ -194,32 +195,57 @@ void MainWindow::onBrowseClicked()
     }
 }
 
-void MainWindow::onCheckClicked()
-{
-    try {
-        if (type == Type::OTHER) {
-            QMessageBox::warning(this, "Warning",
-                            "No XML file is selected.");
-            return;
-        }
-        string xmlContent;
-        QString userXml = inputText->toPlainText().trimmed();
+void MainWindow::onCheckClicked() {
+    QString currentContent = inputText->toPlainText();
+    inputText->setExtraSelections({});
 
-        if (!userXml.isEmpty()) {
-            xmlContent = FileIO::readXML(userXml.toStdString(), SourceType::GUI);
-        }
-        else {
-            QMessageBox::warning(this, "Warning",
-                "No user XML provided and no file selected.");
-            return;
-        }
+    if (currentContent.trimmed().isEmpty()) {
+        QMessageBox::warning(this, "Warning", "Input area is empty.");
+        return;
+    }
 
-        // TODO: add button logic here
-        printOutput(xmlContent);
+    string report;
+    vector<XMLError> errors = ParseError::verify(currentContent.toStdString(), false, report);
+
+    if (errors.empty()) {
+        printOutput("Success: XML is valid.");
+        lastValidationResult = true;
+        isDataDirty = false;
+    } else {
+        printOutput(report);
+        highlightErrorLine(errors[0].line);
+
+        auto reply = QMessageBox::question(this, "XML Errors Found",
+                                          "Errors were detected in the XML structure. Would you like to auto-fix them?",
+                                          QMessageBox::Yes | QMessageBox::No);
+
+        if (reply == QMessageBox::Yes) {
+            string fixedXml = ParseError::solveErrors(currentContent.toStdString());
+            inputText->setText(QString::fromStdString(fixedXml));
+            printOutput("XML fixed and updated.");
+            isDataDirty = true;
+        }
+        lastValidationResult = false;
     }
-    catch (const exception &ex) {
-        reportError("Error", ex.what());
-    }
+}
+
+void MainWindow::highlightErrorLine(int lineNumber) {
+    QTextDocument *doc = inputText->document();
+    QTextBlock block = doc->findBlockByLineNumber(lineNumber - 1); // 0-indexed
+
+    QTextCursor cursor(block);
+    cursor.select(QTextCursor::LineUnderCursor);
+
+    QTextEdit::ExtraSelection selection;
+    selection.format.setBackground(Qt::red);
+    selection.format.setForeground(Qt::white);
+    selection.cursor = cursor;
+
+    QList<QTextEdit::ExtraSelection> extraSelections;
+    extraSelections.append(selection);
+    inputText->setExtraSelections(extraSelections);
+
+    inputText->setTextCursor(cursor);
 }
 
 void MainWindow::onPrettifyClicked()
@@ -477,7 +503,35 @@ void MainWindow::onDrawGraphClicked() {
 }
 
 bool MainWindow::validateAndFixXML(QString& content) {
-    return true;
+    if (!isDataDirty && lastValidationResult) {
+        return true;
+    }
+
+    string report;
+    vector<XMLError> errors = ParseError::verify(content.toStdString(), false, report);
+
+    if (errors.empty()) {
+        lastValidationResult = true;
+        isDataDirty = false;
+        return true;
+    }
+
+    QString prompt = QString("Errors found (e.g., %1). Analysis requires valid XML.\n\nAuto-fix now?")
+                     .arg(QString::fromStdString(report).split('\n').first());
+
+    auto reply = QMessageBox::question(this, "Validation Required", prompt,
+                                      QMessageBox::Yes | QMessageBox::No);
+
+    if (reply == QMessageBox::Yes) {
+        content = QString::fromStdString(ParseError::solveErrors(content.toStdString()));
+        inputText->setText(content);
+        isDataDirty = false;
+        lastValidationResult = true;
+        return true;
+    }
+
+    lastValidationResult = false;
+    return false;
 }
 
 NetworkAnalyzer* MainWindow::getReadyAnalyzer() {

@@ -17,9 +17,7 @@ struct XMLError {
 class ParseError{
 public:
     // Main function for 'xml_editor verify -i input.xml'
-    static void verify(const string& input, bool fixFlag, string& outputResult);
-
-private:
+    static vector<XMLError> verify(const string& input, bool fix, string& outputResult);
     // -f
     static string solveErrors(const string& input);
 };

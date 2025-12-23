@@ -2,61 +2,77 @@
 #include "../include/XMLParsser.hpp" //to use function (extractTagName)
 #include <sstream>
 #include <stack>
+#include <vector>
 
-
-void ParseError::verify(const string& input, bool fix, string& outputResult) { //fix flag = -f
+vector<XMLError> ParseError::verify(const string& input, bool fix, string& outputResult) {
     vector<XMLError> errors;
     stack<pair<string, int>> tagStack; // Stores {tagName, lineNumber}
     stringstream ss(input);
     string line;
     int currentLine = 0;
+    bool rootFound = false;
 
     while (getline(ss, line)) {
         currentLine++;
         size_t pos = 0;
         while ((pos = line.find('<', pos)) != string::npos) {
             size_t endPos = line.find('>', pos);
-            if (endPos == string::npos) break;
+            if (endPos == string::npos) {
+                errors.push_back({currentLine, "unknown", "Missing closing bracket '>'"});
+                break;
+            }
 
             string fullTag = line.substr(pos, endPos - pos + 1);
             string tagName = XMLParser::extractTagName(fullTag);
+
+            if (tagName.empty()) {
+                pos = endPos + 1;
+                continue;
+            }
 
             if (fullTag[1] == '/') { // Closing Tag
                 if (!tagStack.empty() && tagStack.top().first == tagName) {
                     tagStack.pop();
                 } else {
-                    errors.push_back({currentLine, tagName, "Mismatched or extra closing tag"});
+                    string expected = tagStack.empty() ? "none" : tagStack.top().first;
+                    errors.push_back({currentLine, tagName, "Mismatched closing tag (expected </" + expected + ">)"});
                 }
-            } else if (fullTag.find("/>") == string::npos) { // Opening Tag
+            }
+            else if (fullTag.find("/>") != string::npos) { // Self-closing
+                rootFound = true;
+            }
+            else { // Opening Tag
+                rootFound = true;
                 tagStack.push({tagName, currentLine});
             }
             pos = endPos + 1;
         }
     }
 
+    if (!rootFound && !input.empty()) {
+        errors.push_back({1, "Root", "Missing root container (e.g., <users>)"});
+    }
     // Capture remaining unclosed tags
     while (!tagStack.empty()) {
-        errors.push_back({tagStack.top().second, tagStack.top().first, "Missing closing tag"});
+        errors.push_back({tagStack.top().second, tagStack.top().first, "Tag opened but never closed"});
         tagStack.pop();
     }
 
-    // Prepare Output
     if (errors.empty()) {
-        outputResult = "Output valid";
+        outputResult = "Success: XML is valid.";
     } else {
-        stringstream report;
-        report << "Output invalid\nTotal Errors: " << errors.size() << "\n";
-        for (const auto& e : errors) {
-            report << "Line " << e.line << ": " << e.type << " for <" << e.tagName << ">\n";
-        }
-
-        // If -f is specified, fix and update outputResult
         if (fix) {
             outputResult = solveErrors(input);
         } else {
+            stringstream report;
+            report << "Invalid XML Structure\nTotal Errors: " << errors.size() << "\n";
+            for (const auto& e : errors) {
+                report << "Line " << e.line << ": " << e.type << " for <" << e.tagName << ">\n";
+            }
             outputResult = report.str();
         }
     }
+    return errors;
 }
 
 string ParseError::solveErrors(const string& input) {
@@ -82,10 +98,21 @@ string ParseError::solveErrors(const string& input) {
             string name = XMLParser::extractTagName(tag);
 
             if (tag[1] == '/') { // Closing
-                if (!s.empty() && s.top() == name) {
-                    processedLine += tag;
-                    s.pop();
-                } // Ignore mismatched closing tags to "fix" the structure
+                if (!s.empty()) {
+                    if (s.top() == name) {
+                        processedLine += tag;
+                        s.pop();
+                    } else {
+                        while(!s.empty() && s.top() != name) {
+                            processedLine += "</" + s.top() + ">";
+                            s.pop();
+                        }
+                        if(!s.empty()) {
+                            processedLine += tag;
+                            s.pop();
+                        }
+                    }
+                }
             } else { // Opening
                 processedLine += tag;
                 s.push(name);

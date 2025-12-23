@@ -43,6 +43,9 @@ public:
 private slots:
     void onBrowseClicked();
     void onCheckClicked();
+
+    void highlightErrorLine(int lineNumber);
+
     void onPrettifyClicked();
     void onConvertClicked();
     void onMinifyClicked();
@@ -59,7 +62,7 @@ private slots:
     void onSearchClicked();
     void onDrawGraphClicked();
 
-    static bool validateAndFixXML(QString &content);
+    bool validateAndFixXML(QString &content);
 
 private:
     std::unique_ptr<PostSearch> searchEngine;
@@ -67,6 +70,8 @@ private:
     std::unique_ptr<NetworkAnalyzer> analyzer;
     NetworkAnalyzer *getReadyAnalyzer();
     bool isDataDirty = true;
+    QString lastValidationReport;
+    bool lastValidationResult = false;
     QString lastParsedContent;
 
     QLineEdit *inputPath;
