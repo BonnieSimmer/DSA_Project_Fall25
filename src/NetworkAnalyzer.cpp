@@ -66,8 +66,7 @@ string NetworkAnalyzer::MostActiveUser() const {
     int maxActivity = -1;
     for (const auto& user : users) {
         int following = followingCount.count(user.id) ? followingCount.at(user.id) : 0;
-        int activity = user.followers.size() + following;
-        maxActivity = max(maxActivity, activity);
+        maxActivity = max(maxActivity, following);
     }
 
 
@@ -75,14 +74,10 @@ string NetworkAnalyzer::MostActiveUser() const {
 
     for (const auto& user : users) {
         int following = followingCount.count(user.id) ? followingCount.at(user.id) : 0;
-        int activity = user.followers.size() + following;
-
-        if (activity == maxActivity) {
+        if (following == maxActivity) {
             out << "\nID: " << user.id
                  << "\nName: " << user.name
-                 << "\nNumber of Followers: " << user.followers.size()
                  << "\nNumber of Following: " << following
-                 << "\nActivity (Followers + Following): " << activity
                  << "\n------------------------------------";
         }
     }
