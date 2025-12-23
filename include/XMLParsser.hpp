@@ -64,7 +64,7 @@ private:
     Post post;
     Follower follower;
     void extractUsersFromTree(const std::shared_ptr<XMLNode>& root);
-    string extractTagName(const std::string& tagContent);
+    static string extractTagName(const std::string& tagContent); //making it static allows me to use it in parseError class
 
 public:
 

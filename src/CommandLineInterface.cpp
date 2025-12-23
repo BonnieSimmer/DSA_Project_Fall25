@@ -1,7 +1,9 @@
 #include "../include/CommandLineInterface.hpp"
+#include "ParseError.hpp"
 #include <iostream>
 #include <vector>
 #include <fstream>
+
 
 int CommandLineInterface::run(int argc, char* argv[]) {
 
@@ -17,18 +19,33 @@ int CommandLineInterface::run(int argc, char* argv[]) {
 
     for(int i = 1; i < argc; i++) {
         std::string arg = argv[i];
-        if (arg == "-i") inputFile = argv[++i];
-        if (arg == "-o") outputFile = argv[++i];
+        if (arg == "-i" && i + 1 < argc) inputFile = argv[++i];
+        if (arg == "-o" && i + 1 < argc) outputFile = argv[++i];
         if (arg == "-f") fix = true;
     }
+
 
     // Load file
     string content = FileIO::readXML(inputFile, SourceType::File);
     string output;
+    string result;
 
     if (command == "verify") {
-        // Verify XML
+        
+    // result will be filled with either the error report OR the fixed XML
+    ParseError::verify(content, fix, result);
+
+    if (!fix) {
+        // CASE 1: No -f flag. Just print the report to console.
+        std::cout << result << std::endl;
+        return 0; 
+    } else {
+        // CASE 2: -f flag is present. 
+        std::cout << "XML fixed successfully." << std::endl;
+        output = result; 
     }
+}
+    
     else if (command == "format") {
         output = XMLFormatter::format(content);
     }
@@ -48,6 +65,9 @@ int CommandLineInterface::run(int argc, char* argv[]) {
         std::cout << "Unknown command\n";
     }
 
-    FileIO::writeData(outputFile, output, SourceType::File);
+    // 4. Save to file (Only if output is not empty and outputFile was provided)
+    if (!outputFile.empty() && !output.empty()) {
+        FileIO::writeData(outputFile, output, SourceType::File);
+    }
     return 0;
 }
