@@ -386,30 +386,6 @@ void MainWindow::saveOutputToFile(const string &data, bool compress, const strin
     }
 }
 
-NetworkAnalyzer* MainWindow::getReadyAnalyzer() {
-    QString currentContent = inputText->toPlainText().trimmed();
-
-    if (!isDataDirty && analyzer != nullptr) {
-        return analyzer.get();
-    }
-
-    if (currentContent.isEmpty()) {
-        reportError("Empty Input", "Please provide XML data first.");
-        return nullptr;
-    }
-
-    if (!validateAndFixXML(currentContent)) {
-        return nullptr;
-    }
-
-    XMLParser parser;
-    parser.parse(currentContent.toStdString());
-    analyzer = std::make_unique<NetworkAnalyzer>(parser.users);
-
-    isDataDirty = false;
-    return analyzer.get();
-}
-
 void MainWindow::onMostInfluencerClicked() {
     auto* networkAnalyzer = getReadyAnalyzer();
     if (!networkAnalyzer) return;
@@ -455,7 +431,36 @@ void MainWindow::onSuggestClicked() {
 }
 
 void MainWindow::onSearchClicked() {
+    auto* engine = getReadySearchEngine();
+    if (!engine) return;
 
+    std::string query = searchInput->text().toStdString();
+    if (query.empty()) {
+        QMessageBox::warning(this, "Warning", "Please enter a search term.");
+        return;
+    }
+
+    std::vector<Post> results;
+    if (wordRadio->isChecked()) {
+        results = engine->searchByWord(query);
+    } else {
+        results = engine->searchByTopic(query);
+    }
+
+    if (results.empty()) {
+        printOutput("No posts found for: " + query);
+    } else {
+        std::stringstream ss;
+        ss << "Found " << results.size() << " post(s):\n";
+        ss << "----------------------\n";
+        for (const auto& post : results) {
+            ss << "Body: " << post.getBody() << "\n";
+            ss << "Topics: ";
+            for (const auto& t : post.getTopics()) ss << "[" << t << "] ";
+            ss << "\n----------------------\n";
+        }
+        printOutput(ss.str());
+    }
 }
 
 void MainWindow::onDrawGraphClicked() {
@@ -473,4 +478,48 @@ void MainWindow::onDrawGraphClicked() {
 
 bool MainWindow::validateAndFixXML(QString& content) {
     return true;
+}
+
+NetworkAnalyzer* MainWindow::getReadyAnalyzer() {
+    QString currentContent = inputText->toPlainText().trimmed();
+
+    if (!isDataDirty && analyzer != nullptr) {
+        return analyzer.get();
+    }
+
+    if (currentContent.isEmpty()) {
+        reportError("Empty Input", "Please provide XML data first.");
+        return nullptr;
+    }
+
+    if (!validateAndFixXML(currentContent)) {
+        return nullptr;
+    }
+
+    XMLParser parser;
+    parser.parse(currentContent.toStdString());
+    analyzer = std::make_unique<NetworkAnalyzer>(parser.users);
+
+    isDataDirty = false;
+    return analyzer.get();
+}
+
+PostSearch* MainWindow::getReadySearchEngine() {
+    QString currentContent = inputText->toPlainText().trimmed();
+
+    if (!isDataDirty && searchEngine != nullptr) {
+        return searchEngine.get();
+    }
+
+    if (currentContent.isEmpty()) {
+        reportError("Empty Input", "Please provide XML data first.");
+        return nullptr;
+    }
+
+    XMLParser parser;
+    parser.parse(currentContent.toStdString());
+    searchEngine = std::make_unique<PostSearch>(parser.users);
+
+    isDataDirty = false;
+    return searchEngine.get();
 }

@@ -3,19 +3,12 @@
 
 // Extract words from text.
 std::vector<std::string> PostSearch::extractWords(const std::string& text) {
-    std::vector<std::string> words; 
-    std::string word; 
-
-    for (char c : text) { 
-            word += c;
-        if (!word.empty() && c == ' ') {
-            words.push_back(word);
-            word.clear();
-        }
-    }
-    if (!word.empty()) { 
+    std::vector<std::string> words;
+    std::stringstream ss(text);
+    std::string word;
+    while (ss >> word) {
         words.push_back(word);
-    }   
+    }
     return words;
 }
 

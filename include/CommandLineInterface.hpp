@@ -9,6 +9,7 @@
 #include "XMLToJson.hpp"
 #include "GraphVisualizer.h"
 #include "NetworkAnalyzer.hpp"
+#include "PostSearch.hpp"
 
 class CommandLineInterface {
 

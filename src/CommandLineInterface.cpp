@@ -14,7 +14,7 @@ int CommandLineInterface::run(const int argc, char* argv[]) {
 
     string command = argv[1];
 
-    string inputFile, outputFile;
+    string inputFile, outputFile, searchTerm;
     vector<int> ids;
     bool fix = false;
     bool is_word;
@@ -25,8 +25,14 @@ int CommandLineInterface::run(const int argc, char* argv[]) {
         if (arg == "-o" && i + 1 < argc) outputFile = argv[++i];
         if (arg == "-f" && i + 1 < argc) fix = true;
         if (arg == "-id" && i + 1 < argc) ids.push_back(atoi(argv[++i]));
-        if (arg == "-w" && i + 1 < argc) is_word = true;
-        if (arg == "-t" && i + 1 < argc) is_word = false;
+        if (arg == "-w" && i + 1 < argc) {
+            is_word = true;
+            searchTerm = argv[++i];
+        }
+        if (arg == "-t" && i + 1 < argc) {
+            is_word = false;
+            searchTerm = argv[++i];
+        }
         if (arg == "-ids" && i + 1 < argc) ids = FileIO::parseIds(argv[++i]);
     }
 
@@ -105,7 +111,37 @@ int CommandLineInterface::run(const int argc, char* argv[]) {
         cout << "Please provide the Id of the user you want suggestions for\n";
 
     } else if (command == "search") {
-        // TODO implement search
+        std::vector<Post> searchResults;
+        XMLParser parser;
+        parser.parse(content);
+
+        PostSearch search(parser.users);
+        if (is_word) {
+            searchResults = search.searchByWord(searchTerm);
+        } else {
+            searchResults = search.searchByTopic(searchTerm);
+        }
+
+        if (!searchResults.empty()) {
+            std::cout << "Found " << searchResults.size() << " post(s):\n";
+            std::cout << std::string(50, '=') << "\n";
+
+            for (const auto& post : searchResults) {
+                std::cout << "Content: " << post.getBody() << "\n";
+                std::cout << "Topics:  [ ";
+                const std::vector<std::string>& topics = post.getTopics();
+                for (size_t i = 0; i < topics.size(); ++i) {
+                    std::cout << topics[i];
+                    if (i < topics.size() - 1) {
+                        std::cout << ", ";
+                    }
+                }
+                std::cout << " ]\n";
+                std::cout << std::string(50, '-') << "\n";
+            }
+        } else {
+            std::cout << "No posts found matching \"" << searchTerm << "\".\n";
+        }
     } else {
         cout << "Unknown command\n";
     }

@@ -13,6 +13,7 @@
 #include "XMLToJson.hpp"
 #include "GraphVisualizer.h"
 #include "AppMode.h"
+#include "PostSearch.hpp"
 
 #include <QMainWindow>
 #include <QLineEdit>
@@ -51,7 +52,6 @@ private slots:
     void printOutput(const std::string& data) const;
     void saveOutputToFile(const std::string& data, bool compress = false, const std::string& outputFileType = "Compressed Files (*.comp)");
 
-    NetworkAnalyzer *getReadyAnalyzer();
     void onMostInfluencerClicked();
     void onMostActiveClicked();
     void onMutualClicked();
@@ -62,7 +62,10 @@ private slots:
     static bool validateAndFixXML(QString &content);
 
 private:
+    std::unique_ptr<PostSearch> searchEngine;
+    PostSearch* getReadySearchEngine();
     std::unique_ptr<NetworkAnalyzer> analyzer;
+    NetworkAnalyzer *getReadyAnalyzer();
     bool isDataDirty = true;
     QString lastParsedContent;
 
