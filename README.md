@@ -22,7 +22,12 @@ Each post has a text and a list of topics.
 └── README.md
 
 ```
-
+# Build & run
+On windows
+```
+cmake -S . -B build -G "MinGW Makefiles"
+cmake --build build
+```
 
 # Requirements
 ## Level 1
