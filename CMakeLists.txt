@@ -36,6 +36,7 @@ add_executable(DSA_Project_Fall25 main.cpp
         include/GraphVisualizer.h
         include/AppMode.h
         include/XMLNode.hpp
+        src/PostSearch.cpp
 )
 
 set_target_properties(DSA_Project_Fall25 PROPERTIES

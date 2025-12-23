@@ -21,14 +21,16 @@ int CommandLineInterface::run(const int argc, char* argv[]) {
 
     for(int i = 1; i < argc; i++) {
         string arg = argv[i];
-        if (arg == "-i") inputFile = argv[++i];
-        if (arg == "-o") outputFile = argv[++i];
-        if (arg == "-f") fix = true;
-        if (arg == "-id") ids.push_back(atoi(argv[++i]));
-        if (arg == "-w") is_word = true;
-        if (arg == "-t") is_word = false;
+        if (arg == "-i" && i + 1 < argc) inputFile = argv[++i];
+        if (arg == "-o" && i + 1 < argc) outputFile = argv[++i];
+        if (arg == "-f" && i + 1 < argc) fix = true;
+        if (arg == "-id" && i + 1 < argc) ids.push_back(atoi(argv[++i]));
+        if (arg == "-w" && i + 1 < argc) is_word = true;
+        if (arg == "-t" && i + 1 < argc) is_word = false;
         if (arg == "-ids" && i + 1 < argc) ids = FileIO::parseIds(argv[++i]);
     }
+
+    string result;
 
     if(command == "decompress"){
         decompressor.decompress(inputFile,outputFile);
@@ -40,7 +42,17 @@ int CommandLineInterface::run(const int argc, char* argv[]) {
     string output;
 
     if (command == "verify") {
-        // TODO Verify XML
+        // result will be filled with either the error report OR the fixed XML
+        ParseError::verify(content, fix, result);
+
+        if (!fix) {
+            // CASE 1: No -f flag. Just print the report to console.
+            std::cout << result << std::endl;
+            return 0;
+        }
+        // CASE 2: -f flag is present.
+        std::cout << "XML fixed successfully." << std::endl;
+        output = result;
     }
     else if (command == "format") {
         output = XMLFormatter::format(content);
@@ -98,6 +110,9 @@ int CommandLineInterface::run(const int argc, char* argv[]) {
         cout << "Unknown command\n";
     }
 
-    FileIO::writeData(outputFile, output, SourceType::File);
+    // 4. Save to file (Only if output is not empty and outputFile was provided)
+    if (!outputFile.empty() && !output.empty()) {
+        FileIO::writeData(outputFile, output, SourceType::File);
+    }
     return 0;
 }

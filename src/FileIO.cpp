@@ -1,5 +1,6 @@
 #include <sstream>
 #include "../include/FileIO.hpp"
+#include "../include/AppMode.h"
 
 #include <charconv>
 
@@ -12,14 +13,16 @@ string FileIO::readXML(const string &input, SourceType sourceType) {
     if (sourceType == SourceType::File) {
         ifstream file(input);
         if (!file.is_open()) {
-            throw runtime_error("Cannot open input file: " + input);
+            reportError("Input Error","Cannot open input file: " + input);
+            exit(1);
         }
 
         ostringstream buffer;
         buffer << file.rdbuf();
         return buffer.str();
     }
-    throw runtime_error("You forgot to add the source type!");
+    reportError("Input Error","You forgot to add the source type!");
+    exit(1);
 }
 
 string FileIO::writeData(const string &output, const string &data, SourceType sourceType) {
@@ -29,19 +32,21 @@ string FileIO::writeData(const string &output, const string &data, SourceType so
 
     if (sourceType == SourceType::File) {
         if (output.empty()) {
-            throw runtime_error("No output file path provided.");
+            reportError("Output Error","No output file path provided.");
+            exit(1);
         }
 
         ofstream file(output);
         if (!file.is_open()) {
-            throw runtime_error("Cannot open output file: " + output);
+            reportError("Output Error","Cannot open output file: " + output);
+            exit(1);
         }
 
         file << data;
         return "File saved successfully.";
     }
-
-    throw runtime_error("You forgot to add the source type!");
+    reportError("Output Error","You forgot to add the source type!");
+    exit(1);
 }
 
 vector<int> FileIO::parseIds(const string& rawIds) {
