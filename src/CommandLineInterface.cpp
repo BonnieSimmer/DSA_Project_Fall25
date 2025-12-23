@@ -2,26 +2,38 @@
 #include "ParseError.hpp"
 #include <iostream>
 #include <vector>
-#include <fstream>
 
+XMLCompressor CommandLineInterface::compressor;
+XMLDecompressor CommandLineInterface::decompressor;
 
-int CommandLineInterface::run(int argc, char* argv[]) {
+int CommandLineInterface::run(const int argc, char* argv[]) {
 
     if (argc < 3) {
-        std::cout << "Invalid command\n";
+        cout << "Invalid command\n";
         return 0;
     }
 
-    std::string command = argv[1];
+    string command = argv[1];
 
-    std::string inputFile, outputFile;
+    string inputFile, outputFile;
+    vector<int> ids;
     bool fix = false;
+    bool is_word;
 
     for(int i = 1; i < argc; i++) {
-        std::string arg = argv[i];
-        if (arg == "-i" && i + 1 < argc) inputFile = argv[++i];
-        if (arg == "-o" && i + 1 < argc) outputFile = argv[++i];
+        string arg = argv[i];
+        if (arg == "-i") inputFile = argv[++i];
+        if (arg == "-o") outputFile = argv[++i];
         if (arg == "-f") fix = true;
+        if (arg == "-id") ids.push_back(atoi(argv[++i]));
+        if (arg == "-w") is_word = true;
+        if (arg == "-t") is_word = false;
+        if (arg == "-ids" && i + 1 < argc) ids = FileIO::parseIds(argv[++i]);
+    }
+
+    if(command == "decompress"){
+        decompressor.decompress(inputFile,outputFile);
+        return 0;
     }
 
 
@@ -31,18 +43,7 @@ int CommandLineInterface::run(int argc, char* argv[]) {
     string result;
 
     if (command == "verify") {
-        
-    // result will be filled with either the error report OR the fixed XML
-    ParseError::verify(content, fix, result);
-
-    if (!fix) {
-        // CASE 1: No -f flag. Just print the report to console.
-        std::cout << result << std::endl;
-        return 0; 
-    } else {
-        // CASE 2: -f flag is present. 
-        std::cout << "XML fixed successfully." << std::endl;
-        output = result; 
+        // TODO Verify XML
     }
 }
     
@@ -50,19 +51,56 @@ int CommandLineInterface::run(int argc, char* argv[]) {
         output = XMLFormatter::format(content);
     }
     else if (command == "json") {
-       // Convert XML to JSON
+       output = convertXMLToJSON(content);
     }
     else if (command == "mini") {
         output = XMLMinifier::minify(content);
     }
     else if(command == "compress"){
-        // Compress XML
-    }
-    else if(command == "decompress"){
-        // Decompress XML
-    }
-    else {
-        std::cout << "Unknown command\n";
+        compressor.compress(content,outputFile);
+        return 0;
+    } else if (command == "draw") {
+        XMLParser parser;
+        parser.parse(content);
+        GraphVisualizer::draw(parser.users, outputFile);
+        return 0;
+    } else if (command == "most_active") {
+        XMLParser parser;
+        parser.parse(content);
+        NetworkAnalyzer analyzer(parser.users);
+        cout << analyzer.MostActiveUser();
+        return 0;
+    } else if (command == "most_influencer") {
+        XMLParser parser;
+        parser.parse(content);
+        NetworkAnalyzer analyzer(parser.users);
+        cout << analyzer.MostInfluencerUser();
+        return 0;
+    } else if (command == "mutual") {
+        if (!ids.empty()) {
+            XMLParser parser;
+            parser.parse(content);
+            NetworkAnalyzer analyzer(parser.users);
+
+            cout << analyzer.mutualFollowers(ids);
+            return 0;
+        }
+        cout << "Please provide Ids to find mutual followers between them\n";
+    } else if (command == "suggest") {
+        if (!ids.empty()) {
+            XMLParser parser;
+            parser.parse(content);
+            NetworkAnalyzer analyzer(parser.users);
+
+            cout << analyzer.suggestUsersToFollow(ids[0]) << endl;
+            return 0;
+        }
+        cout << "Please provide the Id of the user you want suggestions for\n";
+
+    } else if (command == "search") {
+        // TODO implement search
+    } else {
+        cout << "Unknown command\n";
     }
 
     // 4. Save to file (Only if output is not empty and outputFile was provided)

@@ -1,0 +1,26 @@
+#ifndef PARSEERROR_HPP
+#DEFINE PARSEERROR_HPP
+
+#include <string>
+using namespace std;
+
+class ParseError{
+private:
+int line;
+int column;
+string message;
+
+public:
+ParseError(int l, int c, string msg);
+
+int getLine() const;
+int getCol() const;
+string getMessage() const;
+
+void setLine(int l);
+void setCol(int c);
+void setMessage(string msg);
+
+string applyFix();
+};
+#endif

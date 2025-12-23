@@ -1,22 +1,9 @@
-#include "ParseError.hpp"
-#include "XMLParsser.hpp" //to use function (extractTagName)
-#include <sstream>
-#include <stack>
-
-
-void ParseError::verify(const string& input, bool fix, string& outputResult) { //fix flag = -f
-    vector<XMLError> errors;
-    stack<pair<string, int>> tagStack; // Stores {tagName, lineNumber}
-    stringstream ss(input);
-    string line;
-    int currentLine = 0;
-
-    while (getline(ss, line)) {
-        currentLine++;
-        size_t pos = 0;
-        while ((pos = line.find('<', pos)) != string::npos) {
-            size_t endPos = line.find('>', pos);
-            if (endPos == string::npos) break; 
+#include "../include/ParseError.hpp"
+ParseError::ParseError(int l, int c, string msg){
+    line = l;
+    column = c;
+    message = msg;
+}
 
             string fullTag = line.substr(pos, endPos - pos + 1);
             string tagName = extractTagName(fullTag);

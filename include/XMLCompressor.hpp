@@ -28,7 +28,7 @@ struct Compare {
 class XMLCompressor {
 private:
     map<char, string> huffmanCode;
-    map<char, int> freqMap;
+    map<unsigned char, int> freqMap;
 
     Node* buildTree();
     void generateCodes(Node* root, string str);
@@ -36,7 +36,7 @@ private:
     void deleteTree(Node* root);
 
 public:
-    void compress(const string& inputFile, const string& outputFile);
+    void compress(const string& data, const string& outputFile);
 };
 
 #endif

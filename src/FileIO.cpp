@@ -1,6 +1,7 @@
 #include <sstream>
 #include "../include/FileIO.hpp"
 
+#include <charconv>
 
 
 string FileIO::readXML(const string &input, SourceType sourceType) {
@@ -41,4 +42,33 @@ string FileIO::writeData(const string &output, const string &data, SourceType so
     }
 
     throw runtime_error("You forgot to add the source type!");
+}
+
+vector<int> FileIO::parseIds(const string& rawIds) {
+    vector<int> ids;
+    const char* first = rawIds.data();
+    const char* last = rawIds.data() + rawIds.size();
+
+    while (first < last) {
+        while (first < last && *first == ' ') first++;
+        if (first >= last) break;
+
+        int value;
+        auto [ptr, ec] = std::from_chars(first, last, value);
+
+        if (ec == std::errc()) {
+            ids.push_back(value);
+            first = ptr;
+
+            while (first < last && *first == ' ') first++;
+
+            if (first < last && *first == ',') {
+                first++;
+            }
+        } else {
+            while (first < last && *first != ',') first++;
+            if (first < last) first++;
+        }
+    }
+    return ids;
 }
