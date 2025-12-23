@@ -1,63 +1,76 @@
 #include "../include/ParseError.hpp"
-#include "../include/XMLParsser.hpp" //to use function (extractTagName)
 #include <sstream>
 #include <stack>
 #include <vector>
 
 vector<XMLError> ParseError::verify(const string& input, bool fix, string& outputResult) {
     vector<XMLError> errors;
-    stack<pair<string, int>> tagStack; // Stores {tagName, lineNumber}
-    stringstream ss(input);
-    string line;
-    int currentLine = 0;
-    bool rootFound = false;
+    stack<TagInfo> tagStack; // Stores {tagName, lineNumber}
+    int currentLine = 1;
 
-    while (getline(ss, line)) {
-        currentLine++;
-        size_t pos = 0;
-        while ((pos = line.find('<', pos)) != string::npos) {
-            size_t endPos = line.find('>', pos);
-            if (endPos == string::npos) {
-                errors.push_back({currentLine, "unknown", "Missing closing bracket '>'"});
-                break;
+    for (size_t i = 0; i < input.length(); ++i) {
+        if (input[i] == '\n') {
+            currentLine++; continue;
+        }
+
+        if (input[i] == '<') {
+            size_t endPos = input.find('>', i);
+            if (endPos == string::npos) break;
+
+            string content = input.substr(i + 1, endPos - i - 1);
+            // To ignore comments, preprocessor tags and self-closing tags like in section
+            if (content[0] == '?' || content[0] == '!' || content.back() == '/') {
+                i = endPos; continue;
             }
 
-            string fullTag = line.substr(pos, endPos - pos + 1);
-            string tagName = XMLParser::extractTagName(fullTag);
+            string tagName = getTagName(content);
 
-            if (tagName.empty()) {
-                pos = endPos + 1;
-                continue;
-            }
-
-            if (fullTag[1] == '/') { // Closing Tag
-                if (!tagStack.empty() && tagStack.top().first == tagName) {
-                    tagStack.pop();
+            if (content[0] == '/') { // Closing Tag
+                if (!tagStack.empty() && tagStack.top().name == tagName) {
+                    tagStack.pop(); // Normal match
                 } else {
-                    string expected = tagStack.empty() ? "none" : tagStack.top().first;
-                    errors.push_back({currentLine, tagName, "Mismatched closing tag (expected </" + expected + ">)"});
+                    bool foundInStack = false;
+                    stack<TagInfo> temp = tagStack;
+
+                    while (!temp.empty()) {
+                        if (temp.top().name == tagName) {
+                            foundInStack = true;
+                            break;
+                        }
+                        temp.pop();
+                    }
+
+                    if (foundInStack) {
+                        while (!tagStack.empty() && tagStack.top().name != tagName) {
+                            errors.push_back({
+                                tagStack.top().line,
+                                tagStack.top().name,
+                                "missing_closing for <" + tagStack.top().name + ">",
+                                "missing_closing"
+                            });
+                            tagStack.pop(); // Sync the stack
+                        }
+                        tagStack.pop();
+                    } else {
+                        errors.push_back({
+                            currentLine,
+                            tagName,
+                            "Extra closing tag </" + tagName + "> found (no matching opener)",
+                            "extra_closer"
+                        });
+                    }
                 }
-            }
-            else if (fullTag.find("/>") != string::npos) { // Self-closing
-                rootFound = true;
-            }
-            else { // Opening Tag
-                rootFound = true;
+            } else { // Opening Tag
                 tagStack.push({tagName, currentLine});
             }
-            pos = endPos + 1;
+            i = endPos;
         }
-    }
-
-    if (!rootFound && !input.empty()) {
-        errors.push_back({1, "Root", "Missing root container (e.g., <users>)"});
     }
     // Capture remaining unclosed tags
     while (!tagStack.empty()) {
-        errors.push_back({tagStack.top().second, tagStack.top().first, "Tag opened but never closed"});
+        errors.push_back({tagStack.top().line, tagStack.top().name, "missing_closing for <" + tagStack.top().name + ">", "missing_closing"});
         tagStack.pop();
     }
-
     if (errors.empty()) {
         outputResult = "Success: XML is valid.";
     } else {
@@ -72,6 +85,7 @@ vector<XMLError> ParseError::verify(const string& input, bool fix, string& outpu
             outputResult = report.str();
         }
     }
+
     return errors;
 }
 
@@ -95,7 +109,7 @@ string ParseError::solveErrors(const string& input) {
             if (end == string::npos) break;
 
             string tag = line.substr(start, end - start + 1);
-            string name = XMLParser::extractTagName(tag);
+            string name = getTagName(tag);
 
             if (tag[1] == '/') { // Closing
                 if (!s.empty()) {
@@ -128,4 +142,17 @@ string ParseError::solveErrors(const string& input) {
         s.pop();
     }
     return fixed.str();
+}
+
+string getTagName(string content) {
+    if (content.empty()) {
+        return "";
+    }
+    size_t start = (content[0] == '/') ? 1 : 0;
+    size_t end = content.find_first_of(" \t\r\n", start);
+
+    if (end == string::npos) {
+        return content.substr(start);
+    }
+    return content.substr(start, end - start);
 }

@@ -8,6 +8,11 @@
 
 using namespace std;
 
+struct TagInfo {
+    string name;
+    int line;
+};
+
 struct XMLError {
     int line;          // The line number where the error was detected
     string tagName;    // The name of the tag involved (e.g., "user", "id")
@@ -21,5 +26,7 @@ public:
     // -f
     static string solveErrors(const string& input);
 };
+
+string getTagName(string content);
 
 #endif

@@ -66,18 +66,22 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     mainLayout->addLayout(displayLayout, 1);
 
     this->setStyleSheet(
+      "* {"
+        "   font-size: 12pt;"
+        "   font-family: Arial;"
+        "}"
         "QPushButton {"
-        "   background-color: #3498db;"
+        "   background-color: #0d6efd;"
         "   color: white;"
         "   border-radius: 5px;"
         "   padding: 5px;"
         "   font-weight: bold;"
         "}"
         "QPushButton:hover {"
-        "   background-color: #2980b9;"
+        "   background-color: #1454b3;"
         "}"
         "QPushButton:pressed {"
-        "   background-color: #1f6391;"
+        "   background-color: #1a4078;"
         "}"
     );
 
@@ -432,6 +436,7 @@ void MainWindow::onMutualClicked() {
 
     if (idInput->text().isEmpty()) {
         QMessageBox::warning(this, "Warning", "Please provide target IDs.");
+        idInput->setFocus();
         return;
     }
     vector<int> targetIds = FileIO::parseIds(idInput->text().toStdString());
@@ -451,6 +456,8 @@ void MainWindow::onSuggestClicked() {
     }
     if (idInput->text().contains(",")) {
         QMessageBox::warning(this, "Warning", "Please provide one ID per line (no commas).");
+        idInput->clear();
+        idInput->setFocus();
         return;
     }
     printOutput(networkAnalyzer->suggestUsersToFollow(idInput->text().toInt()));
@@ -463,6 +470,7 @@ void MainWindow::onSearchClicked() {
     std::string query = searchInput->text().toStdString();
     if (query.empty()) {
         QMessageBox::warning(this, "Warning", "Please enter a search term.");
+        searchInput->setFocus();
         return;
     }
 
@@ -543,6 +551,7 @@ NetworkAnalyzer* MainWindow::getReadyAnalyzer() {
 
     if (currentContent.isEmpty()) {
         reportError("Empty Input", "Please provide XML data first.");
+        inputText->setFocus();
         return nullptr;
     }
 
@@ -567,6 +576,7 @@ PostSearch* MainWindow::getReadySearchEngine() {
 
     if (currentContent.isEmpty()) {
         reportError("Empty Input", "Please provide XML data first.");
+        inputText->setFocus();
         return nullptr;
     }
 
