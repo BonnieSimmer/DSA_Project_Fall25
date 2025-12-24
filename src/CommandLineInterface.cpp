@@ -58,7 +58,7 @@ int CommandLineInterface::run(const int argc, char* argv[]) {
         }
         // CASE 2: -f flag is present.
         std::cout << "XML fixed successfully." << std::endl;
-        output = result;
+        output = XMLFormatter::format(result);
     }
     else if (command == "format") {
         output = XMLFormatter::format(content);

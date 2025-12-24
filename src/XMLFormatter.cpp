@@ -1,9 +1,10 @@
 #include "../include/XMLFormatter.hpp"
 #include <sstream>
+
 using namespace std;
 
 static string indentSpaces(int level) {
-    return string(level * 4, ' ');
+    return (level > 0) ? string(level * 4, ' ') : "";
 }
 
 string XMLFormatter::format(const string& xml) {
@@ -13,26 +14,21 @@ string XMLFormatter::format(const string& xml) {
     int n = xml.length();
 
     while (i < n) {
-
-        if (xml[i] == ' ' || xml[i] == '\n' || xml[i] == '\t') {
+        if (isspace(static_cast<unsigned char>(xml[i]))) {
             i++;
             continue;
         }
 
-
         if (xml[i] == '<') {
-            int tagEnd = xml.find('>', i);
-            if (tagEnd == string::npos)
-                break;
+            size_t tagEnd = xml.find('>', i);
+            if (tagEnd == string::npos) break;
 
             string tag = xml.substr(i, tagEnd - i + 1);
 
-
-            if (tag[1] == '/') {
+            if (tag.size() > 1 && tag[1] == '/') {
                 indent--;
                 formatted << indentSpaces(indent) << tag << "\n";
-            }
-            else if (tag[tag.length() - 2] == '/') {
+            } else if (tag.size() > 2 && tag[tag.length() - 2] == '/') {
                 formatted << indentSpaces(indent) << tag << "\n";
             }
             else {
@@ -47,8 +43,10 @@ string XMLFormatter::format(const string& xml) {
             int textEnd = xml.find('<', i);
             string text = xml.substr(i, textEnd - i);
 
-            if (!text.empty()) {
-                formatted << indentSpaces(indent) << text << "\n";
+            size_t first = text.find_first_not_of(" \t\n\r");
+            if (first != string::npos) {
+                size_t last = text.find_last_not_of(" \t\n\r");
+                formatted << indentSpaces(indent) << text.substr(first, (last - first + 1)) << "\n";
             }
             i = textEnd;
         }

@@ -31,5 +31,6 @@ public:
 string getTagName(const string &content);
 bool isLeafTag(const string& name);
 string getChildName(const string& parentName);
+bool isWhitespace(const string& s);
 
 #endif
