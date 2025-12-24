@@ -109,6 +109,7 @@ int CommandLineInterface::run(const int argc, char* argv[]) {
             return 0;
             }
             cout << "XML Errors Found. Please fix them.\n";
+            return 0;
         }
         cout << "Please provide Ids to find mutual followers between them\n";
     } else if (command == "suggest") {
@@ -122,6 +123,7 @@ int CommandLineInterface::run(const int argc, char* argv[]) {
             return 0;
             }
             cout << "XML Errors Found. Please fix them.\n";
+            return 0;
         }
         cout << "Please provide the Id of the user you want suggestions for\n";
 
