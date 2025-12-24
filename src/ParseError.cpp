@@ -92,8 +92,7 @@ vector<XMLError> ParseError::verify(const string& input, bool fix, string& outpu
 string ParseError::solveErrors(const string& input) {
     struct TagLine {
         string name;
-        int l
-        ine;
+        int line;
     };
 
     stack<TagLine> s;
