@@ -3,10 +3,35 @@
 
 #include <string>
 #include <vector>
+#include <set>
 #include <stack>
 #include <iostream>
+#include <map>
 
 using namespace std;
+
+static const set<string> leafTags = {"id", "name", "topic", "body"};
+static const set<string> parentTags = {"topics", "followers", "posts", "users","post","user"};
+static const pmr::map<string, set<string>> tagSchema = {
+    {"follower", {"id"}},
+    {"user", {"id", "name", "posts", "followers"}},
+    {"post", {"body", "topics"}},
+    {"topics", {"topic"}},
+    {"followers", {"follower"}},
+    {"users", {"user"}},
+    {"posts", {"post"}}
+};
+static const map<string, string> autoWrappers = {
+    {"post", "body"},
+    {"topics", "topic"}
+};
+
+static const map<string, string> parentMapping = {
+    {"topic", "topics"},
+    {"follower", "followers"},
+    {"post", "posts"},
+    {"user", "users"}
+};
 
 struct TagInfo {
     string name;
@@ -29,7 +54,6 @@ public:
 };
 
 string getTagName(const string &content);
-bool isLeafTag(const string& name);
 string getChildName(const string& parentName);
 bool isWhitespace(const string& s);
 

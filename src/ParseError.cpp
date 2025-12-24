@@ -26,10 +26,11 @@ vector<XMLError> ParseError::verify(const string& input, bool fix, string& outpu
 
             string textContent = line.substr(pos, start - pos);
             if (!isWhitespace(textContent)) {
-                if (!tagStack.empty() && tagStack.top().name == "post") {
-                    errors.push_back({currentLine, "body", "Implicit body opener inserted for floating text", "missing_opener"});
-                    processedLine += "<body>";
-                    tagStack.push({"body", currentLine});
+                if (!tagStack.empty() && parentTags.contains(tagStack.top().name)) {
+                    string childName = getChildName(tagStack.top().name);
+                    errors.push_back({currentLine, childName, "Implicit "+ childName +" opener inserted for floating text", "missing_opener"});
+                    processedLine += "<" + childName +">";
+                    tagStack.push({childName, currentLine});
                 }
             }
             processedLine += textContent;
@@ -106,13 +107,29 @@ vector<XMLError> ParseError::verify(const string& input, bool fix, string& outpu
                     }
                 }
             } else { // Opening
-                // If a leaf node is open and a new tag starts, close the leaf
-                if (!tagStack.empty() && isLeafTag(tagStack.top().name) && name != tagStack.top().name) {
+                string parent = tagStack.empty() ? "" : tagStack.top().name;
+
+                // Check if this tag is allowed inside the current parent
+                if (!parent.empty() && tagSchema.count(parent)) {
+                    const auto& allowedChildren = tagSchema.at(parent);
+
+                    if (allowedChildren.find(name) == allowedChildren.end()) {
+                        // changing it to the first valid child
+                        string validChild = *allowedChildren.begin();
+                        errors.push_back({currentLine, name, "Invalid child tag for <" + parent + ">. Renamed to <" + validChild + ">", "invalid_child"});
+                        name = validChild;
+                        fullTag = "<" + name + ">";
+                    }
+                }
+
+                // close leaf if a new tag starts
+                if (!tagStack.empty() && leafTags.contains(tagStack.top().name)) {
                     forceClosedCount[tagStack.top().name]++;
                     errors.push_back({tagStack.top().line, tagStack.top().name, "missing_closer", "missing_closer"});
                     processedLine += "</" + tagStack.top().name + ">";
                     tagStack.pop();
                 }
+
                 tagStack.push({name, currentLine});
                 processedLine += fullTag;
             }
@@ -161,16 +178,13 @@ string getTagName(const string &content) {
     return content.substr(start, end - start);
 }
 
-bool isLeafTag(const string& name) {
-    static const std::set<string> leaves = {"id", "name", "topic", "body"};
-    return leaves.find(name) != leaves.end();
-}
-
 string getChildName(const string& parentName) {
     if (parentName == "topics") return "topic";
     if (parentName == "followers") return "follower";
     if (parentName == "posts") return "post";
     if (parentName == "users") return "user";
+    if (parentName == "post") return "body";
+    if (parentName == "user" || parentName == "follower") return "id";
     return "";
 }
 
