@@ -92,10 +92,11 @@ vector<XMLError> ParseError::verify(const string& input, bool fix, string& outpu
 string ParseError::solveErrors(const string& input) {
     struct TagLine {
         string name;
-        int line;
+        int l
+        ine;
     };
 
-    stack<string> s;
+    stack<TagLine> s;
     stringstream ss(input);
     stringstream fixed;
     string line;
@@ -104,12 +105,14 @@ string ParseError::solveErrors(const string& input) {
     while (getline(ss, line)) {
         string processedLine = "";
         size_t pos = 0;
+
         while (pos < line.length()) {
             size_t start = line.find('<', pos);
             if (start == string::npos) {
                 processedLine += line.substr(pos);
                 break;
             }
+
             processedLine += line.substr(pos, start - pos);
             size_t end = line.find('>', start);
             if (end == string::npos) break;
@@ -117,14 +120,13 @@ string ParseError::solveErrors(const string& input) {
             string tag = line.substr(start, end - start + 1);
             string name = getTagName(tag);
 
-            if (tag[1] == '/') { // Closing
+            if (tag[1] == '/') { // Closing tag
                 if (!s.empty()) {
-                    if (s.top() == name && s.top().name == name) {
+                    if (s.top().name == name) {
                         processedLine += tag;
                         s.pop();
                     } else {
-                        // Close unmatched tags until the matching one is found
-                        stack<TagLine> tempStack;
+                        stack<TagLine> temp;
                         bool found = false;
 
                         while (!s.empty()) {
@@ -132,37 +134,41 @@ string ParseError::solveErrors(const string& input) {
                                 found = true;
                                 break;
                             }
-                            tempStack.push(s.top());
+                            temp.push(s.top());
                             s.pop();
                         }
 
-                        //close unmatched tags
-                        while(!tempStack.empty()) {
-                            processedLine += "</" + tempStack.top() + ">";
-                            tempStack.pop();
+                        while (!temp.empty()) {
+                            processedLine += "</" + temp.top().name + ">";
+                            temp.pop();
                         }
 
-                        // Pop the matching tag if found
-                        if (found) s.pop();
-                        processedLine += tag; // Append current closing tag
+                        if (found) {
+                            s.pop();
+                            processedLine += tag;
+                        }
+                    }
                 }
-            } else { // Opening
+            } else { // Opening tag
                 processedLine += tag;
-                s.push(name, currentLine);
+                s.push({name, currentLine});
             }
+
             pos = end + 1;
         }
+
         fixed << processedLine << "\n";
         currentLine++;
     }
-
-    // close any remaining tags in the stack
+    //close any remaining tags in the stack
     while (!s.empty()) {
-        fixed << "</" << s.top() << ">\n";
+        fixed << "</" << s.top().name << ">\n";
         s.pop();
     }
+
     return fixed.str();
 }
+
 
 string getTagName(string content) {
     if (content.empty()) {
