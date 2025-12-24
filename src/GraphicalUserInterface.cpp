@@ -295,6 +295,7 @@ void MainWindow::onPrettifyClicked()
         }
         xmlContent = XMLFormatter::format(xmlContent);
         printOutput(xmlContent);
+        type = Type::XML;
     }
     catch (const exception &ex) {
         reportError("Error", ex.what());
@@ -350,6 +351,7 @@ void MainWindow::onMinifyClicked()  {
         xmlContent = XMLMinifier::minify(xmlContent);
 
         printOutput(xmlContent);
+        type = Type::XML;
     }
     catch (const exception &ex) {
         reportError("Error", ex.what());
