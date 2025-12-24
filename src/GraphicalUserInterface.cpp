@@ -87,6 +87,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 
     connect(inputText, &QTextEdit::textChanged, this, [this]() {
     isDataDirty = true;
+    inputText->setExtraSelections({});
     });
     connect(browseBtn, &QPushButton::clicked, this, &MainWindow::onBrowseClicked);
 }
@@ -201,7 +202,7 @@ void MainWindow::onBrowseClicked()
 
 void MainWindow::onCheckClicked() {
     QString currentContent = inputText->toPlainText();
-    inputText->setExtraSelections({});
+    inputText->setExtraSelections({}); // Clear old highlights
 
     if (currentContent.trimmed().isEmpty()) {
         QMessageBox::warning(this, "Warning", "Input area is empty.");
@@ -217,10 +218,31 @@ void MainWindow::onCheckClicked() {
         isDataDirty = false;
     } else {
         printOutput(report);
-        highlightErrorLine(errors[0].line);
+        QList<QTextEdit::ExtraSelection> allSelections;
+
+        for (const XMLError& error : errors) {
+            QTextEdit::ExtraSelection selection;
+            QTextBlock block = inputText->document()->findBlockByLineNumber(error.line - 1);
+
+            QTextCursor cursor(block);
+            cursor.select(QTextCursor::LineUnderCursor);
+
+            selection.format.setBackground(Qt::red);
+            selection.format.setForeground(Qt::white);
+            selection.cursor = cursor;
+
+            allSelections.append(selection);
+        }
+
+        inputText->setExtraSelections(allSelections);
+
+        if (!errors.empty()) {
+            QTextBlock firstBlock = inputText->document()->findBlockByLineNumber(errors[0].line - 1);
+            inputText->setTextCursor(QTextCursor(firstBlock));
+        }
 
         auto reply = QMessageBox::question(this, "XML Errors Found",
-                                          "Errors were detected in the XML structure. Would you like to auto-fix them?",
+                                          "Multiple errors detected. Auto-fix them?",
                                           QMessageBox::Yes | QMessageBox::No);
 
         if (reply == QMessageBox::Yes) {

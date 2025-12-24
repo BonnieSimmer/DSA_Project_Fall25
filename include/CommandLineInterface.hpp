@@ -16,9 +16,12 @@ class CommandLineInterface {
 public:
     static int run(int argc, char* argv[]);
 
+
 private:
     static XMLCompressor compressor;
     static XMLDecompressor decompressor;
 };
+
+bool validate(string& content, bool fix,string& result);
 
 #endif
