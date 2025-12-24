@@ -90,10 +90,16 @@ vector<XMLError> ParseError::verify(const string& input, bool fix, string& outpu
 }
 
 string ParseError::solveErrors(const string& input) {
+    struct TagLine {
+        string name;
+        int line;
+    };
+
     stack<string> s;
     stringstream ss(input);
     stringstream fixed;
     string line;
+    int currentLine = 1;
 
     while (getline(ss, line)) {
         string processedLine = "";
@@ -113,30 +119,44 @@ string ParseError::solveErrors(const string& input) {
 
             if (tag[1] == '/') { // Closing
                 if (!s.empty()) {
-                    if (s.top() == name) {
+                    if (s.top() == name && s.top().name == name) {
                         processedLine += tag;
                         s.pop();
                     } else {
-                        while(!s.empty() && s.top() != name) {
-                            processedLine += "</" + s.top() + ">";
+                        // Close unmatched tags until the matching one is found
+                        stack<TagLine> tempStack;
+                        bool found = false;
+
+                        while (!s.empty()) {
+                            if (s.top().name == name) {
+                                found = true;
+                                break;
+                            }
+                            tempStack.push(s.top());
                             s.pop();
                         }
-                        if(!s.empty()) {
-                            processedLine += tag;
-                            s.pop();
+
+                        //close unmatched tags
+                        while(!tempStack.empty()) {
+                            processedLine += "</" + tempStack.top() + ">";
+                            tempStack.pop();
                         }
-                    }
+
+                        // Pop the matching tag if found
+                        if (found) s.pop();
+                        processedLine += tag; // Append current closing tag
                 }
             } else { // Opening
                 processedLine += tag;
-                s.push(name);
+                s.push(name, currentLine);
             }
             pos = end + 1;
         }
         fixed << processedLine << "\n";
+        currentLine++;
     }
 
-    // Force close any tags left open at the end of the file
+    // close any remaining tags in the stack
     while (!s.empty()) {
         fixed << "</" << s.top() << ">\n";
         s.pop();
