@@ -246,7 +246,7 @@ void MainWindow::onCheckClicked() {
                                           QMessageBox::Yes | QMessageBox::No);
 
         if (reply == QMessageBox::Yes) {
-            string fixedXml = ParseError::solveErrors(currentContent.toStdString());
+            string fixedXml = ParseError::solveErrors(currentContent.toStdString(), errors);
             inputText->setText(QString::fromStdString(fixedXml));
             printOutput("XML fixed and updated.");
             isDataDirty = true;
@@ -553,7 +553,7 @@ bool MainWindow::validateAndFixXML(QString& content) {
                                       QMessageBox::Yes | QMessageBox::No);
 
     if (reply == QMessageBox::Yes) {
-        content = QString::fromStdString(ParseError::solveErrors(content.toStdString()));
+        content = QString::fromStdString(ParseError::solveErrors(content.toStdString(), errors));
         inputText->setText(content);
         isDataDirty = false;
         lastValidationResult = true;

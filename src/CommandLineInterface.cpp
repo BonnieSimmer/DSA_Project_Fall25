@@ -49,9 +49,9 @@ int CommandLineInterface::run(const int argc, char* argv[]) {
 
     if (command == "verify") {
         // result will be filled with either the error report OR the fixed XML
-        validate(content, fix, result);
+        bool correct = validate(content, fix, result);
 
-        if (!fix) {
+        if (!fix || correct) {
             // CASE 1: No -f flag. Just print the report to console.
             std::cout << result << std::endl;
             return 0;
