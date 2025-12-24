@@ -70,8 +70,6 @@ public:
 
     std::vector<User> users; 
     shared_ptr<XMLNode> parse(const string& input);
-    vector<ParseError> detectErrors(string text);
-    string fixErrors(string text, const vector<ParseError>& errors);
     vector<User> getUsers() const {
         return users;
     }
