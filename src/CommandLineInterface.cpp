@@ -157,8 +157,9 @@ int CommandLineInterface::run(const int argc, char* argv[]) {
             } else {
                 std::cout << "No posts found matching \"" << searchTerm << "\".\n";
             }
+        } else {
+            cout << "XML Errors Found. Please fix them.\n";
         }
-        cout << "XML Errors Found. Please fix them.\n";
     } else {
         cout << "Unknown command\n";
     }
