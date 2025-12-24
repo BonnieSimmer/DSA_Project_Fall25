@@ -21,17 +21,6 @@ static const pmr::map<string, set<string>> tagSchema = {
     {"users", {"user"}},
     {"posts", {"post"}}
 };
-static const map<string, string> autoWrappers = {
-    {"post", "body"},
-    {"topics", "topic"}
-};
-
-static const map<string, string> parentMapping = {
-    {"topic", "topics"},
-    {"follower", "followers"},
-    {"post", "posts"},
-    {"user", "users"}
-};
 
 struct TagInfo {
     string name;

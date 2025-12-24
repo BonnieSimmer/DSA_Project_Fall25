@@ -96,9 +96,9 @@ vector<XMLError> ParseError::verify(const string& input, bool fix, string& outpu
                             }
                         } else {
                             // search back to wrap the content
-                            size_t searchPos = currentContext.length() > 0 ? currentContext.length() - 1 : 0;
+                            size_t searchPos = !currentContext.empty() ? currentContext.length() - 1 : 0;
                             while (searchPos > 0 && currentContext[searchPos] != '>') searchPos--;
-                            insertionPos = (currentContext.length() > 0 && currentContext[searchPos] == '>') ? searchPos + 1 : 0;
+                            insertionPos = (!currentContext.empty() && currentContext[searchPos] == '>') ? searchPos + 1 : 0;
                         }
 
                         currentContext.insert(insertionPos, "<" + name + ">");
@@ -110,10 +110,10 @@ vector<XMLError> ParseError::verify(const string& input, bool fix, string& outpu
                 string parent = tagStack.empty() ? "" : tagStack.top().name;
 
                 // Check if this tag is allowed inside the current parent
-                if (!parent.empty() && tagSchema.count(parent)) {
+                if (!parent.empty() && tagSchema.contains(parent)) {
                     const auto& allowedChildren = tagSchema.at(parent);
 
-                    if (allowedChildren.find(name) == allowedChildren.end()) {
+                    if (!allowedChildren.contains(name)) {
                         // changing it to the first valid child
                         string validChild = *allowedChildren.begin();
                         errors.push_back({currentLine, name, "Invalid child tag for <" + parent + ">. Renamed to <" + validChild + ">", "invalid_child"});
